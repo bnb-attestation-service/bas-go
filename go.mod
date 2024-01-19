@@ -1,4 +1,4 @@
-module github.com/bas-go
+module bas-go
 
 go 1.21.0
 
