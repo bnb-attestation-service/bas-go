@@ -1,4 +1,4 @@
-package utils
+package bas_go
 
 import (
 	"fmt"
