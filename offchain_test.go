@@ -295,7 +295,7 @@ func TestUploadToGF(t *testing.T) {
 	if _agent, err = NewAgentFromKey(privateKey, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
-	_agent.ConfigBucket("bas")
+	_agent.ConfigBucket("bas-90498da77d3ab65e3f2589f0e7ea515266a80a40")
 	data := map[string]interface{}{
 		"p":     "1212",
 		"tick":  "1212",
@@ -326,4 +326,31 @@ func TestUploadToGF(t *testing.T) {
 		}
 
 	}
+}
+
+func TestCreateBucket(t *testing.T) {
+	var _agent *Agent
+	var err error
+	if _agent, err = NewAgentFromKey(privateKey, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+		panic(err)
+	}
+	if err := _agent.CreateBucket(); err != nil {
+		panic(err)
+	}
+
+}
+
+func TestPublicAttestation(t *testing.T) {
+	var _agent *Agent
+	var err error
+	if _agent, err = NewAgentFromKey(privateKey, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+		panic(err)
+	}
+	_agent.ConfigBucket("bas-90498da77d3ab65e3f2589f0e7ea515266a80a40")
+	if hash, err := _agent.OffchainChangeAttestationVisible("0x6fafa31aec106f515e021d367563ba2f3feb1d99cb302fe5a25723747d1be356", "0xcde3a9daa0c6d42753ce8a21ffb1764decbe2fbdd7e7bfc328acfe89a970bfc1", true); err != nil {
+		panic(err)
+	} else {
+		t.Log(hash)
+	}
+
 }

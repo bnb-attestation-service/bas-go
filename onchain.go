@@ -79,3 +79,20 @@ func (a *Agent) OnchainRevoke(schema string, uid string) (string, error) {
 		return tx.Hash().Hex(), nil
 	}
 }
+
+func (a *Agent) OnchainRevokeOffchain(uid string) (string, error) {
+
+	if uid[:2] == "0x" {
+		uid = uid[2:]
+	}
+	_uid, err := hex.DecodeString(uid)
+	if err != nil || len(_uid) != 32 {
+		return "", fmt.Errorf("can not parse uid: " + uid)
+	}
+
+	if tx, err := a.contract.RevokeOffchain(a.txOp, sliceToArray(_uid)); err != nil {
+		return "", fmt.Errorf("revoke offchain attestation onchain error: " + err.Error())
+	} else {
+		return tx.Hash().Hex(), nil
+	}
+}
