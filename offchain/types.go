@@ -138,8 +138,9 @@ func EncodeData(schema string, data map[string]interface{}) ([]byte, error) {
 	} else {
 		return res, nil
 	}
+
 }
-func NewBASOffchainAttestation(schemaUid string, schema string, data map[string]interface{}, recipient string, revocable bool, refUid string, salt string, nonce uint64, time uint64, expirationTime uint64, version uint16, signer *ecdsa.PrivateKey) (*OffchainAttestationParam, error) {
+func NewBASOffchainAttestation(schemaUid string, schema string, data map[string]interface{}, recipient string, revocable bool, refUid string, nonce uint64, time uint64, expirationTime uint64, version uint16, signer *ecdsa.PrivateKey) (*OffchainAttestationParam, error) {
 
 	attest := OffchainAttestationParam{}
 	attest.Domain = BASTESTDOMAIN
@@ -176,8 +177,6 @@ func NewBASOffchainAttestation(schemaUid string, schema string, data map[string]
 	message["refUID"] = refUid
 	m.RefUID = refUid
 
-	message["salt"] = salt
-
 	attest.Message = message
 
 	attest.PrimaryType = "Attest"
@@ -190,7 +189,6 @@ func NewBASOffchainAttestation(schemaUid string, schema string, data map[string]
 		{Name: "revocable", Type: "bool"},
 		{Name: "refUID", Type: "bytes32"},
 		{Name: "data", Type: "bytes"},
-		{Name: "salt", Type: "bytes32"},
 		{Name: "nonce", Type: "uint64"},
 	}
 	attest.Type = map[string][]types.Type{}

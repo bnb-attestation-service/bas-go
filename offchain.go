@@ -46,8 +46,8 @@ func (a *Agent) CreateBucket() error {
 	return nil
 }
 
-func (a *Agent) OffchainNewAttestation(schemaUid string, schema string, data map[string]interface{}, recipient string, revocable bool, refUid string, salt string, nonce uint64, time uint64, expirationTime uint64, version uint16) (*offchain.OffchainAttestationParam, error) {
-	return offchain.NewBASOffchainAttestation(schemaUid, schema, data, recipient, revocable, refUid, salt, nonce, time, expirationTime, version, a.privKey)
+func (a *Agent) OffchainNewAttestation(schemaUid string, schema string, data map[string]interface{}, recipient string, revocable bool, refUid string, nonce uint64, time uint64, expirationTime uint64, version uint16) (*offchain.OffchainAttestationParam, error) {
+	return offchain.NewBASOffchainAttestation(schemaUid, schema, data, recipient, revocable, refUid, nonce, time, expirationTime, version, a.privKey)
 }
 
 func (a *Agent) OffchainGetAttestationJson(attestation *offchain.OffchainAttestationParam) (string, error) {

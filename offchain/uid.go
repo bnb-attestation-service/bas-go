@@ -10,7 +10,7 @@ func getOffChainAttestationUid(param MessageForUid) string {
 
 	hash := solsha3.SoliditySHA3(
 		// types
-		[]string{"uint16", "bytes32", "address", "address", "uint64", "uint64", "bool", "bytes32", "bytes", "uint32"},
+		[]string{"uint16", "bytes", "address", "address", "uint64", "uint64", "bool", "bytes32", "bytes", "uint32"},
 
 		// values
 		[]interface{}{

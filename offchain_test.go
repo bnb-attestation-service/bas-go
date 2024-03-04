@@ -140,36 +140,13 @@ func TestCreateOffchainAttestation(t *testing.T) {
 		"nonce": 10,
 		"vote":  0,
 	}
-	// if res, err := offchain.NewBASOffchainAttestation(
-	// 	"0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f",
-	// 	"string p,string tick,uint256 amt,uint8 vote,uint256 nonce",
-	// 	data,
-	// 	"0x16abBD7f92CDF1703beb6D314885d2a79B0497fb",
-	// 	false,
-	// 	"0x0000000000000000000000000000000000000000000000000000000000000000",
-	// 	"0x0000000000000000000000000000000000000000000000000000000000000000",
-	// 	0,
-	// 	1703255628,
-	// 	0,
-	// 	1,
-	// 	_agent.privKey,
-	// ); err != nil {
-	// 	panic(err)
-	// } else {
-	// 	if _b, err := json.Marshal(res); err != nil {
-	// 		panic(err)
-	// 	} else {
-	// 		fmt.Println(string(_b))
-	// 	}
 
-	// }
 	if res, err := _agent.OffchainNewAttestation(
 		"0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f",
 		"string p,string tick,uint256 amt,uint8 vote,uint256 nonce",
 		data,
 		"0x16abBD7f92CDF1703beb6D314885d2a79B0497fb",
 		false,
-		"0x0000000000000000000000000000000000000000000000000000000000000000",
 		"0x0000000000000000000000000000000000000000000000000000000000000000",
 		0,
 		1703255628,
@@ -202,7 +179,6 @@ func Test_checkOffchainAttestation(t *testing.T) {
 		  "recipient": "0x16abBD7f92CDF1703beb6D314885d2a79B0497fb",
 		  "refUID": "0x0000000000000000000000000000000000000000000000000000000000000000",
 		  "revocable": false,
-		  "salt": "0x0000000000000000000000000000000000000000000000000000000000000000",
 		  "schema": "0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f",
 		  "time": 1703255628,
 		  "version": 1
@@ -242,10 +218,6 @@ func Test_checkOffchainAttestation(t *testing.T) {
 			  "type": "bytes"
 			},
 			{
-			  "name": "salt",
-			  "type": "bytes32"
-			},
-			{
 			  "name": "nonce",
 			  "type": "uint64"
 			}
@@ -270,9 +242,9 @@ func Test_checkOffchainAttestation(t *testing.T) {
 		  ]
 		},
 		"signature": {
-		  "R": "0x34ec2c9f252fd7d01f023e306fa28b23296c71505259ec8abdde7ca9a3baac1b",
-		  "S": "0x40eb305cad50330ab5acc5750e81a5a38326258fb700d6d17928e6d6eef44c42",
-		  "V": 27
+		  "R": "0x205845584be9c05caebecc345c88ff1e3ef9b3bf2e1600d5fb8bde91a8f2e8f1",
+		  "S": "0x7ce08ca0895367313062c3fece0435ace2d7d312eb02fb6ac3c58105f904305c",
+		  "V": 28
 		},
 		"primaryType": "Attest",
 		"uid": "0x461d59aa0d460c55014c10851fc166a220a2bf898f71fe77c1ff19a443ae1d8e"
@@ -310,7 +282,6 @@ func TestUploadToGF(t *testing.T) {
 		data,
 		"0x16abBD7f92CDF1703beb6D314885d2a79B0497fb",
 		false,
-		"0x0000000000000000000000000000000000000000000000000000000000000000",
 		"0x0000000000000000000000000000000000000000000000000000000000000000",
 		0,
 		1703255628,

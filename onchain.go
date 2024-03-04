@@ -8,13 +8,13 @@ import (
 	"github.com/bnb-attestation-service/bas_go/eas"
 )
 
-func (a *Agent) OnchainAttest(schema string, data []byte, revocable bool, expirationTime uint64) (string, error) {
-	if schema[:2] == "0x" {
-		schema = schema[2:]
+func (a *Agent) OnchainAttest(schemaUid string, data []byte, revocable bool, expirationTime uint64) (string, error) {
+	if schemaUid[:2] == "0x" {
+		schemaUid = schemaUid[2:]
 	}
-	_schema, err := hex.DecodeString(schema)
+	_schema, err := hex.DecodeString(schemaUid)
 	if err != nil || len(_schema) != 32 {
-		return "", fmt.Errorf("can not parse schema uid: " + schema)
+		return "", fmt.Errorf("can not parse schema uid: " + schemaUid)
 	}
 
 	req := eas.AttestationRequest{
