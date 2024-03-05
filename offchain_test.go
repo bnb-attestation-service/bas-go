@@ -1,4 +1,4 @@
-// package bas_go
+// package main
 
 // import (
 // 	"fmt"
@@ -117,14 +117,14 @@
 // func Test_abi(t *testing.T) {
 
 // }
-package bas_go
+package main
 
 import (
 	"encoding/json"
 	"fmt"
 	"testing"
 
-	"github.com/bnb-attestation-service/bas_go/offchain"
+	"github.com/bnb-attestation-service/bas-go/offchain"
 )
 
 func TestCreateOffchainAttestation(t *testing.T) {

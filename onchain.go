@@ -1,11 +1,11 @@
-package bas_go
+package main
 
 import (
 	"encoding/hex"
 	"fmt"
 	"math/big"
 
-	"github.com/bnb-attestation-service/bas_go/eas"
+	"github.com/bnb-attestation-service/bas-go/eas"
 )
 
 func (a *Agent) OnchainAttest(schemaUid string, data []byte, revocable bool, expirationTime uint64) (string, error) {

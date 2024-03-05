@@ -1,4 +1,4 @@
-package bas_go
+package main
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/bnb-attestation-service/bas_go/eas"
+	"github.com/bnb-attestation-service/bas-go/eas"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"

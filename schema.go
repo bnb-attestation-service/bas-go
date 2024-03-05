@@ -1,10 +1,10 @@
-package bas_go
+package main
 
 import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/bnb-attestation-service/bas_go/schemaRegistry"
+	"github.com/bnb-attestation-service/bas-go/schemaRegistry"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/umbracle/ethgo/abi"
 )

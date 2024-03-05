@@ -1,4 +1,4 @@
-package bas_go
+package main
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/bnb-attestation-service/bas_go/offchain"
+	"github.com/bnb-attestation-service/bas-go/offchain"
 	"github.com/bnb-chain/greenfield-go-sdk/types"
 	storageTypes "github.com/bnb-chain/greenfield/x/storage/types"
 	"github.com/ethereum/go-ethereum/crypto"
