@@ -1,6 +1,6 @@
 # BAS Go SDK
 ## Requirement
-- Go version above 1.20
+- Go version above 1.21
 ## Add SDK Dependencies
 ```sh
 $ go get github.com/bnb-attestation-service/bas-go
