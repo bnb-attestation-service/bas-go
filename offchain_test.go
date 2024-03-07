@@ -286,7 +286,7 @@ func TestUploadToGF(t *testing.T) {
 		0,
 		1703255628,
 		0,
-		1,
+		3,
 	); err != nil {
 		panic(err)
 	} else {

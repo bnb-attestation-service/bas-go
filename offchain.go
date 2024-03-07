@@ -71,12 +71,15 @@ func (a *Agent) OffchainUploadAttestationToGF(attestation *offchain.OffchainAtte
 		ctx := context.Background()
 
 		buffer.WriteString(fmt.Sprintf("%s", _data))
-
-		if txnHash, err := a.gfClient.CreateObject(ctx, a.gfBucket, objName, bytes.NewReader(buffer.Bytes()), types.CreateObjectOptions{Visibility: storageTypes.VISIBILITY_TYPE_PUBLIC_READ}); err != nil {
-			return "", fmt.Errorf("upload to gf err: " + err.Error())
-		} else {
-			return txnHash, nil
+		var txHash string
+		if txHash, err = a.gfClient.CreateObject(ctx, a.gfBucket, objName, bytes.NewReader(buffer.Bytes()), types.CreateObjectOptions{Visibility: storageTypes.VISIBILITY_TYPE_PUBLIC_READ}); err != nil {
+			return "", fmt.Errorf("create obj gf err: " + err.Error())
 		}
+
+		if err = a.gfClient.PutObject(ctx, a.gfBucket, objName, int64(buffer.Len()), bytes.NewReader(buffer.Bytes()), types.PutObjectOptions{TxnHash: txHash}); err != nil {
+			return "", fmt.Errorf("put obj gf err: " + err.Error())
+		}
+		return txHash, nil
 	}
 }
 
