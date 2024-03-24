@@ -140,6 +140,7 @@ func EncodeData(schema string, data map[string]interface{}) ([]byte, error) {
 	}
 
 }
+
 func NewBASOffchainAttestation(schemaUid string, schema string, data map[string]interface{}, recipient string, revocable bool, refUid string, nonce uint64, time uint64, expirationTime uint64, version uint16, signer *ecdsa.PrivateKey) (*OffchainAttestationParam, error) {
 
 	attest := OffchainAttestationParam{}

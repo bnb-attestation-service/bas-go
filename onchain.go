@@ -6,6 +6,7 @@ import (
 	"math/big"
 
 	"github.com/bnb-attestation-service/bas-go/eas"
+	"github.com/bnb-attestation-service/bas-go/onchain"
 )
 
 func (a *Agent) OnchainAttest(schemaUid string, data []byte, revocable bool, expirationTime uint64) (string, error) {
@@ -95,4 +96,38 @@ func (a *Agent) OnchainRevokeOffchain(uid string) (string, error) {
 	} else {
 		return tx.Hash().Hex(), nil
 	}
+}
+
+type OnchainAttestationParam struct {
+	Attestor       string
+	SchemaUid      string
+	Schema         string
+	Recipient      string
+	ExpirationTime uint64
+	Revocable      bool
+	RefUid         string
+	Data           map[string]interface{}
+	Value          string
+	Deadline       uint64
+}
+
+func (a *Agent) OnchainSignDelegateAttestation(attest OnchainAttestationParam) (*onchain.Signature, error) {
+	if sig, err := onchain.NewBASOnchainAttestation(
+		attest.SchemaUid,
+		attest.Schema,
+		attest.Data,
+		attest.Attestor,
+		attest.Recipient,
+		attest.Revocable,
+		attest.RefUid,
+		attest.ExpirationTime,
+		attest.Value,
+		attest.Deadline,
+		a.privKey,
+	); err != nil {
+		return nil, err
+	} else {
+		return sig, nil
+	}
+
 }
