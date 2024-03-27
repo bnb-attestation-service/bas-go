@@ -98,31 +98,11 @@ func (a *Agent) OnchainRevokeOffchain(uid string) (string, error) {
 	}
 }
 
-type OnchainAttestationParam struct {
-	Attestor       string
-	SchemaUid      string
-	Schema         string
-	Recipient      string
-	ExpirationTime uint64
-	Revocable      bool
-	RefUid         string
-	Data           map[string]interface{}
-	Value          string
-	Deadline       uint64
-}
+func (a *Agent) OnchainSignDelegateAttestation(attest onchain.OnchainDelegateAttestationParam) (*onchain.Signature, error) {
+	if sig, err := onchain.NewBASOnchainDelegateAttestation(
 
-func (a *Agent) OnchainSignDelegateAttestation(attest OnchainAttestationParam) (*onchain.Signature, error) {
-	if sig, err := onchain.NewBASOnchainAttestation(
-		attest.SchemaUid,
-		attest.Schema,
-		attest.Data,
-		attest.Attestor,
-		attest.Recipient,
-		attest.Revocable,
-		attest.RefUid,
-		attest.ExpirationTime,
-		attest.Value,
-		attest.Deadline,
+		attest,
+		onchain.OPBNBTESTDOMAIN,
 		a.privKey,
 	); err != nil {
 		return nil, err

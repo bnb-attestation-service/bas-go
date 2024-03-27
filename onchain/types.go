@@ -13,6 +13,8 @@ import (
 const (
 	BASDOMAINNAME = "BAS Attestation"
 	ZEROADDRESS   = "0x0000000000000000000000000000000000000000"
+
+	DELEGATEATTESTPREFIX = "0xea02ffba7dcb45f6fc649714d23f315eef12e3b27f9a7735d8d8bf41eb2b1af1"
 )
 
 type Signature struct {
@@ -48,6 +50,13 @@ var BASTESTDOMAIN = OnchainAttestationDomain{
 	VerifyingContract: "0x6c2270298b1e6046898a322acB3Cbad6F99f7CBD",
 }
 
+var OPBNBTESTDOMAIN = OnchainAttestationDomain{
+	Name:              "OPBNB ATTESTATION",
+	Version:           "1.3.0",
+	ChainId:           "5611",
+	VerifyingContract: "0x5239d34BDa6b05ee47d1310B7Aaf69BB6e864d36",
+}
+
 func EncodeData(schema string, data map[string]interface{}) ([]byte, error) {
 	_schema := fmt.Sprintf("tuple(%s)", schema)
 	fmt.Println(_schema, data)
@@ -60,13 +69,27 @@ func EncodeData(schema string, data map[string]interface{}) ([]byte, error) {
 
 }
 
-func NewBASOnchainAttestation(schemaUid string, schema string, data map[string]interface{}, attestor string, recipient string, revocable bool, refUid string, expirationTime uint64, value string, deadline uint64, signer *ecdsa.PrivateKey) (*Signature, error) {
+type OnchainDelegateAttestationParam struct {
+	Hash           string
+	Attestor       string
+	Schema         string
+	SchemaUid      string
+	Recipient      string
+	ExpirationTime uint64
+	Revocable      bool
+	RefUid         string
+	Data           map[string]interface{}
+	Value          string
+	Deadline       uint64
+}
+
+func NewBASOnchainDelegateAttestation(param OnchainDelegateAttestationParam, domain OnchainAttestationDomain, signer *ecdsa.PrivateKey) (*Signature, error) {
 
 	attest := OnchainAttestationParam{}
-	attest.Domain = BASTESTDOMAIN
+	attest.Domain = domain
 	message := OnchainAttestationMessage{}
 
-	if _data, err := EncodeData(schema, data); err != nil {
+	if _data, err := EncodeData(param.Schema, param.Data); err != nil {
 		return nil, fmt.Errorf("encode data error: " + err.Error())
 	} else {
 
@@ -74,21 +97,21 @@ func NewBASOnchainAttestation(schemaUid string, schema string, data map[string]i
 
 	}
 
-	message["value"] = value
+	message["value"] = param.Value
 
-	message["recipient"] = recipient
+	message["recipient"] = param.Recipient
 
-	message["expirationTime"] = big.NewInt(int64(expirationTime))
+	message["expirationTime"] = big.NewInt(int64(param.ExpirationTime))
 
-	message["attestor"] = attestor
+	message["attestor"] = param.Attestor
 
-	message["revocable"] = revocable
+	message["revocable"] = param.Revocable
 
-	message["deadline"] = big.NewInt(int64(deadline))
+	message["deadline"] = big.NewInt(int64(param.Deadline))
 
-	message["schema"] = schemaUid
+	message["schema"] = param.SchemaUid
 
-	message["refUID"] = refUid
+	message["refUID"] = param.RefUid
 
 	attest.Message = message
 

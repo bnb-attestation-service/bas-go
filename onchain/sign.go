@@ -14,9 +14,9 @@ import (
 )
 
 func Sign(adomain OnchainAttestationDomain, atype OnchainAttestationType, amessage OnchainAttestationMessage, privKey *ecdsa.PrivateKey) ([]byte, error) {
-	if adomain.Name != BASDOMAINNAME {
-		return nil, fmt.Errorf("not a bas attestation sig")
-	}
+	// if adomain.Name != BASDOMAINNAME {
+	// 	return nil, fmt.Errorf("not a bas attestation sig")
+	// }
 
 	if T, ok := atype["Attest"]; !ok {
 		return nil, fmt.Errorf("not a bas attestation sig: no attest type")

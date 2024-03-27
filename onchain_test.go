@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/bnb-attestation-service/bas-go/eas"
+	"github.com/bnb-attestation-service/bas-go/onchain"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -119,6 +120,43 @@ func TestOnchainRevokeAttestation(t *testing.T) {
 		panic(err)
 	} else {
 		fmt.Println(attest)
+	}
+
+}
+
+func TestOnchainDelegate(t *testing.T) {
+	var _agent *Agent
+	var err error
+	if _agent, err = NewAgentFromKey(privateKey, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+		panic(err)
+	}
+
+	data := map[string]interface{}{
+		"p":     "1212",
+		"tick":  "1212",
+		"amt":   10,
+		"nonce": 10,
+		"vote":  0,
+	}
+
+	var param onchain.OnchainDelegateAttestationParam
+	param.Attestor = "0x471543A3bd04486008c8a38c5C00543B73F1769e"
+	param.Data = data
+	param.Deadline = 1721552480
+	param.ExpirationTime = 0
+	param.Recipient = "0x471543A3bd04486008c8a38c5C00543B73F1769e"
+	param.RefUid = "0x0000000000000000000000000000000000000000000000000000000000000000"
+	param.Revocable = false
+	param.Schema = "string p,string tick,uint256 amt,uint8 vote,uint256 nonce"
+	param.SchemaUid = "0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f"
+	param.Value = ""
+	if res, err := _agent.OnchainSignDelegateAttestation(
+		param,
+	); err != nil {
+		panic(err)
+	} else {
+		fmt.Println(res)
+
 	}
 
 }
