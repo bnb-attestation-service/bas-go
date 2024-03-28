@@ -19,6 +19,7 @@ import (
 
 const (
 	BAS               = "0x6c2270298b1e6046898a322acB3Cbad6F99f7CBD"
+	OPBNBTESTBAS      = "0x5e905F77f59491F03eBB78c204986aaDEB0C6bDa"
 	SCHEMA            = "0x08C8b8417313fF130526862f90cd822B55002D72"
 	SCHEMANAME        = "0x44d562ac1d7cd77e232978687fea027ace48f719cf1d58c7888e509663bb87fc"
 	SCHEMADESCRIPTION = "0x21cbc60aac46ba22125ff85dd01882ebe6e87eb4fc46628589931ccbef9b8c94"
@@ -27,6 +28,9 @@ const (
 const (
 	BNBTESTRPC     = "https://data-seed-prebsc-1-s1.bnbchain.org:8545"
 	BNBTESTCHAINID = 97
+
+	OPBNBTESTRPC     = "https://opbnb-testnet-rpc.bnbchain.org"
+	OPBNBTESTCHAINID = 5611
 
 	GFTESTRPC     = "https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org:443"
 	GFTESTCHAINID = "greenfield_5600-1"
@@ -38,20 +42,21 @@ type Agent struct {
 	txOp           *bind.TransactOpts
 	callOp         *bind.CallOpts
 
-	gfClient gf.IClient
-	gfBucket string
+	evmClient *ethclient.Client
+	gfClient  gf.IClient
+	gfBucket  string
 
 	privKey *ecdsa.PrivateKey
 }
 
-func NewAgentFromKey(privKey string, evmRPC string, evmChainId uint64, gfRPC string, gfChainId string) (*Agent, error) {
+func NewAgentFromKey(privKey string, bas string, evmRPC string, evmChainId uint64, gfRPC string, gfChainId string) (*Agent, error) {
 	client, err := ethclient.Dial(evmRPC)
 	if err != nil {
 		return nil, err
 	}
 
 	// 你的合约地址
-	contractAddress := common.HexToAddress(BAS)
+	contractAddress := common.HexToAddress(bas)
 	schemaContractAddress := common.HexToAddress(SCHEMA)
 
 	// 创建一个新的私钥
@@ -110,7 +115,8 @@ func NewAgentFromKey(privKey string, evmRPC string, evmChainId uint64, gfRPC str
 		txOp:           auth,
 		callOp:         &caller,
 
-		gfClient: cli,
-		privKey:  privateKey,
+		evmClient: client,
+		gfClient:  cli,
+		privKey:   privateKey,
 	}, nil
 }

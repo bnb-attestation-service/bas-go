@@ -130,7 +130,7 @@ import (
 func TestCreateOffchainAttestation(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	data := map[string]interface{}{
@@ -264,7 +264,7 @@ func Test_checkOffchainAttestation(t *testing.T) {
 func TestUploadToGF(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	_agent.ConfigBucket("bas-90498da77d3ab65e3f2589f0e7ea515266a80a40")
@@ -302,7 +302,7 @@ func TestUploadToGF(t *testing.T) {
 func TestCreateBucket(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	if err := _agent.CreateBucket(); err != nil {
@@ -314,7 +314,7 @@ func TestCreateBucket(t *testing.T) {
 func TestPublicAttestation(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	_agent.ConfigBucket("bas-90498da77d3ab65e3f2589f0e7ea515266a80a40")

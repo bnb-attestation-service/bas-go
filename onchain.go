@@ -98,7 +98,7 @@ func (a *Agent) OnchainRevokeOffchain(uid string) (string, error) {
 	}
 }
 
-func (a *Agent) OnchainSignDelegateAttestation(attest onchain.OnchainDelegateAttestationParam) (*onchain.Signature, error) {
+func (a *Agent) OnchainSignDelegateAttestation(attest onchain.OnchainDelegateAttestationParam) (*onchain.DelegatedProxyAttestation, error) {
 	if sig, err := onchain.NewBASOnchainDelegateAttestation(
 
 		attest,

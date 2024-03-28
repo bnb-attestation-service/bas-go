@@ -11,7 +11,7 @@ func TestCreateSchema(t *testing.T) {
 	resolver := ""
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	if attest, err := _agent.CreateSchema(schema, revocable, resolver); err != nil {
@@ -27,7 +27,7 @@ func TestGetSchema(t *testing.T) {
 
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	if schema, err := _agent.GetSchema(schemaUid); err != nil {
@@ -43,7 +43,7 @@ func TestSetSchemaName(t *testing.T) {
 	name := "test_name"
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	if schema, err := _agent.SetSchemaName(schemaUid, name); err != nil {
@@ -59,7 +59,7 @@ func TestSetSchemaDescription(t *testing.T) {
 	descrip := "test name for bas go"
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	if schema, err := _agent.SetSchemaDescription(schemaUid, descrip); err != nil {

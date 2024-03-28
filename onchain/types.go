@@ -2,9 +2,11 @@ package onchain
 
 import (
 	"crypto/ecdsa"
+	"encoding/hex"
 	"fmt"
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	types "github.com/ethereum/go-ethereum/signer/core/apitypes"
 	"github.com/umbracle/ethgo/abi"
@@ -51,10 +53,10 @@ var BASTESTDOMAIN = OnchainAttestationDomain{
 }
 
 var OPBNBTESTDOMAIN = OnchainAttestationDomain{
-	Name:              "OPBNB ATTESTATION",
+	Name:              "EAS",
 	Version:           "1.3.0",
 	ChainId:           "5611",
-	VerifyingContract: "0x5239d34BDa6b05ee47d1310B7Aaf69BB6e864d36",
+	VerifyingContract: "0x5e905F77f59491F03eBB78c204986aaDEB0C6bDa",
 }
 
 func EncodeData(schema string, data map[string]interface{}) ([]byte, error) {
@@ -81,15 +83,36 @@ type OnchainDelegateAttestationParam struct {
 	Data           map[string]interface{}
 	Value          string
 	Deadline       uint64
+	Nonce          string
 }
 
-func NewBASOnchainDelegateAttestation(param OnchainDelegateAttestationParam, domain OnchainAttestationDomain, signer *ecdsa.PrivateKey) (*Signature, error) {
+type AttestationRequestData struct {
+	Recipient      common.Address
+	ExpirationTime uint64
+	Revocable      bool
+	RefUID         [32]byte
+	Data           []byte
+	Value          *big.Int
+}
+type DelegatedProxyAttestation struct {
+	Schema    [32]byte
+	Data      AttestationRequestData
+	Signature Signature
+	Attester  common.Address
+	Deadline  uint64
+}
 
+func NewBASOnchainDelegateAttestation(param OnchainDelegateAttestationParam, domain OnchainAttestationDomain, signer *ecdsa.PrivateKey) (*DelegatedProxyAttestation, error) {
+
+	var data AttestationRequestData
+	var result DelegatedProxyAttestation
 	attest := OnchainAttestationParam{}
 	attest.Domain = domain
 	message := OnchainAttestationMessage{}
 
-	if _data, err := EncodeData(param.Schema, param.Data); err != nil {
+	var _data []byte
+	var err error
+	if _data, err = EncodeData(param.Schema, param.Data); err != nil {
 		return nil, fmt.Errorf("encode data error: " + err.Error())
 	} else {
 
@@ -103,7 +126,7 @@ func NewBASOnchainDelegateAttestation(param OnchainDelegateAttestationParam, dom
 
 	message["expirationTime"] = big.NewInt(int64(param.ExpirationTime))
 
-	message["attestor"] = param.Attestor
+	message["attester"] = param.Attestor
 
 	message["revocable"] = param.Revocable
 
@@ -113,22 +136,56 @@ func NewBASOnchainDelegateAttestation(param OnchainDelegateAttestationParam, dom
 
 	message["refUID"] = param.RefUid
 
+	message["nonce"] = param.Nonce
+
 	attest.Message = message
 
 	attest.PrimaryType = "Attest"
 	atypes := []types.Type{
-		{Name: "attestor", Type: "address"},
+		{Name: "attester", Type: "address"},
 		{Name: "schema", Type: "bytes32"},
 		{Name: "recipient", Type: "address"},
 		{Name: "expirationTime", Type: "uint64"},
 		{Name: "revocable", Type: "bool"},
 		{Name: "refUID", Type: "bytes32"},
 		{Name: "data", Type: "bytes"},
-		{Name: "deadline", Type: "uint64"},
 		{Name: "value", Type: "uint256"},
+		{Name: "nonce", Type: "uint256"},
+		{Name: "deadline", Type: "uint64"},
 	}
 	attest.Type = map[string][]types.Type{}
 	attest.Type["Attest"] = atypes
+
+	data.Data = _data
+	data.ExpirationTime = param.ExpirationTime
+	data.Recipient = common.HexToAddress(param.Recipient)
+	if param.RefUid[:2] == "0x" {
+		param.RefUid = param.RefUid[2:]
+	}
+	refUid, err := hex.DecodeString(param.RefUid)
+	if len(refUid) != 32 || err != nil {
+		return nil, fmt.Errorf("invalid refuid")
+	}
+	data.RefUID = [32]byte(refUid)
+	data.Revocable = param.Revocable
+	value := new(big.Int)
+	if value, ok := value.SetString(param.Value, 10); !ok {
+		return nil, fmt.Errorf("invalid value")
+	} else {
+		data.Value = value
+	}
+
+	result.Attester = common.HexToAddress(param.Attestor)
+	result.Data = data
+	result.Deadline = param.Deadline
+	if param.SchemaUid[:2] == "0x" {
+		param.SchemaUid = param.SchemaUid[2:]
+	}
+	if _uid, err := hex.DecodeString(param.SchemaUid); err != nil || len(_uid) != 32 {
+		return nil, err
+	} else {
+		result.Schema = [32]byte(_uid)
+	}
 
 	if sig, err := Sign(attest.Domain, attest.Type, attest.Message, signer); err != nil {
 		return nil, err
@@ -136,7 +193,9 @@ func NewBASOnchainDelegateAttestation(param OnchainDelegateAttestationParam, dom
 		if _sig, err := extractSignature(sig); err != nil {
 			return nil, err
 		} else {
-			return &_sig, nil
+			result.Signature = _sig
 		}
 	}
+	fmt.Println("schema: ", hex.EncodeToString(result.Schema[:]))
+	return &result, nil
 }
