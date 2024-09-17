@@ -10,6 +10,7 @@ import (
 
 	"github.com/bnb-attestation-service/bas-go/offchain"
 	"github.com/bnb-chain/greenfield-go-sdk/types"
+	permissionTypes "github.com/bnb-chain/greenfield/x/permission/types"
 	storageTypes "github.com/bnb-chain/greenfield/x/storage/types"
 	"github.com/ethereum/go-ethereum/crypto"
 )
@@ -121,4 +122,17 @@ func (a *Agent) OffchainUploadBundleToGF(datas []offchain.SingleBundleObject, na
 	}
 	return txHash, nil
 
+}
+
+func (a *Agent) CheckWritePermission(bucket string) (bool, error) {
+	ctx := context.Background()
+	if permission, err := a.gfClient.IsBucketPermissionAllowed(ctx, a.address, bucket, permissionTypes.ACTION_CREATE_OBJECT); err != nil {
+		return false, err
+	} else {
+		if permission != permissionTypes.EFFECT_ALLOW {
+			return false, nil
+		}
+	}
+
+	return true, nil
 }

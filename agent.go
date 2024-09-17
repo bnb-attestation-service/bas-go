@@ -50,6 +50,7 @@ type Agent struct {
 	gfBucket  string
 
 	privKey *ecdsa.PrivateKey
+	address string
 }
 
 func NewAgentFromKey(privKey string, bas string, evmRPC string, evmChainId uint64, gfRPC string, gfChainId string) (*Agent, error) {
@@ -109,6 +110,8 @@ func NewAgentFromKey(privKey string, bas string, evmRPC string, evmChainId uint6
 		log.Fatalf("unable to new greenfield client, %v", err)
 	}
 
+	address := crypto.PubkeyToAddress(privateKey.PublicKey).Hex()
+
 	return &Agent{
 		contract:       contract,
 		schemaContract: schemaContract,
@@ -118,5 +121,6 @@ func NewAgentFromKey(privKey string, bas string, evmRPC string, evmChainId uint6
 		evmClient: client,
 		gfClient:  cli,
 		privKey:   privateKey,
+		address:   address,
 	}, nil
 }

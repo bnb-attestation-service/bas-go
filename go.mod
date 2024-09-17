@@ -16,6 +16,7 @@ replace (
 require (
 	github.com/bnb-attestation-service/go-solidity-sha3 v0.0.0-20240202043049-3dd92ba64d03
 	github.com/bnb-chain/greenfield v1.2.1-0.20231221015040-11071a6ee95b
+	github.com/bnb-chain/greenfield-bundle-sdk v1.1.0
 	github.com/bnb-chain/greenfield-go-sdk v1.2.1
 	github.com/ethereum/go-ethereum v1.12.1
 	github.com/spf13/cast v1.6.0
@@ -37,7 +38,6 @@ require (
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/speakeasy v0.1.1-0.20220910012023-760eaf8b6816 // indirect
-	github.com/bnb-chain/greenfield-bundle-sdk v1.1.0 // indirect
 	github.com/bnb-chain/greenfield-common/go v0.0.0-20230906132736-eb2f0efea228 // indirect
 	github.com/btcsuite/btcd v0.23.3 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect

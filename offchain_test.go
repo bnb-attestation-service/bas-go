@@ -343,10 +343,19 @@ func TestBundleToGF(t *testing.T) {
 		datas = append(datas, data)
 	}
 
-	tx, err := _agent.OffchainUploadBundleToGF(datas, "test-data", "bundle")
+	tx, err := _agent.OffchainUploadBundleToGF(datas, "test-data", "bas-bundle")
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(tx)
 
+}
+
+func TestCheckWritePermission(t *testing.T) {
+	var _agent *Agent
+	var err error
+	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+		panic(err)
+	}
+	fmt.Println(_agent.CheckWritePermission("bas"))
 }
