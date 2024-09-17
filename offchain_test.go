@@ -291,7 +291,7 @@ func TestUploadToGF(t *testing.T) {
 	); err != nil {
 		panic(err)
 	} else {
-		if hash, err := _agent.OffchainUploadAttestationToGF(res); err != nil {
+		if hash, err := _agent.OffchainUploadAttestationToGF(res, true); err != nil {
 			panic(err)
 		} else {
 			fmt.Println(hash)

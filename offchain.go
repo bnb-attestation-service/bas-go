@@ -60,7 +60,7 @@ func (a *Agent) OffchainGetAttestationJson(attestation *offchain.OffchainAttesta
 	}
 }
 
-func (a *Agent) OffchainUploadAttestationToGF(attestation *offchain.OffchainAttestationParam) (string, error) {
+func (a *Agent) OffchainUploadAttestationToGF(attestation *offchain.OffchainAttestationParam, visible bool) (string, error) {
 	if a.gfBucket == "" || a.gfBucket[:3] != "bas" {
 		return "", fmt.Errorf("please config or create gf bucket first")
 	}
@@ -72,12 +72,51 @@ func (a *Agent) OffchainUploadAttestationToGF(attestation *offchain.OffchainAtte
 		ctx := context.Background()
 
 		buffer.WriteString(fmt.Sprintf("%s", _data))
+		var visibility storageTypes.VisibilityType
+		if visible {
+			visibility = storageTypes.VISIBILITY_TYPE_PUBLIC_READ
+		} else {
+			visibility = storageTypes.VISIBILITY_TYPE_PRIVATE
+		}
 		var txHash string
-		if txHash, err = a.gfClient.CreateObject(ctx, a.gfBucket, objName, bytes.NewReader(buffer.Bytes()), types.CreateObjectOptions{Visibility: storageTypes.VISIBILITY_TYPE_PUBLIC_READ}); err != nil {
+		if txHash, err = a.gfClient.CreateObject(ctx, a.gfBucket, objName, bytes.NewReader(buffer.Bytes()), types.CreateObjectOptions{Visibility: visibility}); err != nil {
 			return "", fmt.Errorf("create obj gf err: " + err.Error())
 		}
 
 		if err = a.gfClient.PutObject(ctx, a.gfBucket, objName, int64(buffer.Len()), bytes.NewReader(buffer.Bytes()), types.PutObjectOptions{TxnHash: txHash}); err != nil {
+			return "", fmt.Errorf("put obj gf err: " + err.Error())
+		}
+		return txHash, nil
+	}
+}
+
+func (a *Agent) OffchainUploadAttestationToGFFromRaw(attestationBytes []byte, bucket string, visible bool) (string, error) {
+
+	var attestation offchain.OffchainAttestationParam
+	if err := json.Unmarshal(attestationBytes, &attestation); err != nil {
+		return "", fmt.Errorf("error attestation type" + err.Error())
+	}
+
+	objName := fmt.Sprintf("%s.%s", attestation.Message["schema"], attestation.Uid)
+	if _data, err := json.Marshal(attestation); err != nil {
+		return "", fmt.Errorf("marshal offchain attestation error: " + err.Error())
+	} else {
+		var buffer bytes.Buffer
+		ctx := context.Background()
+
+		buffer.WriteString(fmt.Sprintf("%s", _data))
+		var visibility storageTypes.VisibilityType
+		if visible {
+			visibility = storageTypes.VISIBILITY_TYPE_PUBLIC_READ
+		} else {
+			visibility = storageTypes.VISIBILITY_TYPE_PRIVATE
+		}
+		var txHash string
+		if txHash, err = a.gfClient.CreateObject(ctx, bucket, objName, bytes.NewReader(buffer.Bytes()), types.CreateObjectOptions{Visibility: visibility}); err != nil {
+			return "", fmt.Errorf("create obj gf err: " + err.Error())
+		}
+
+		if err = a.gfClient.PutObject(ctx, bucket, objName, int64(buffer.Len()), bytes.NewReader(buffer.Bytes()), types.PutObjectOptions{TxnHash: txHash}); err != nil {
 			return "", fmt.Errorf("put obj gf err: " + err.Error())
 		}
 		return txHash, nil
