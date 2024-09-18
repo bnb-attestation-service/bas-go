@@ -7,8 +7,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/bnb-attestation-service/bas-go/offchain"
+	bundletypes "github.com/bnb-chain/greenfield-bundle-sdk/types"
 	"github.com/bnb-chain/greenfield-go-sdk/types"
 	permissionTypes "github.com/bnb-chain/greenfield/x/permission/types"
 	storageTypes "github.com/bnb-chain/greenfield/x/storage/types"
@@ -161,6 +163,32 @@ func (a *Agent) OffchainUploadBundleToGF(datas []offchain.SingleBundleObject, na
 	}
 	return txHash, nil
 
+}
+
+func (a *Agent) OffchainDownloadBundle(bucketName string, objName string, savePath string) (string, error) {
+	ctx := context.Background()
+	// Get bundle object from Greenfield
+	bundledObject, _, err := a.gfClient.GetObject(ctx, bucketName, objName, types.GetObjectOptions{})
+	if err != nil {
+		return "", err
+	}
+	// Write bundle object into temp file
+	bundleFile, err := os.CreateTemp(savePath, bundletypes.TempBundleFilePrefix)
+	if err != nil {
+		return "", err
+	}
+	defer bundleFile.Close()
+	buf := new(bytes.Buffer)
+	_, err = buf.ReadFrom(bundledObject)
+
+	if err != nil {
+		return "", err
+	}
+	_, err = bundleFile.Write(buf.Bytes())
+	if err != nil {
+		return "", err
+	}
+	return bundleFile.Name(), nil
 }
 
 func (a *Agent) CheckWritePermission(bucket string) (bool, error) {

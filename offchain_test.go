@@ -359,3 +359,12 @@ func TestCheckWritePermission(t *testing.T) {
 	}
 	fmt.Println(_agent.CheckWritePermission("bas"))
 }
+
+func TestDownloadBundle(t *testing.T) {
+	var _agent *Agent
+	var err error
+	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+		panic(err)
+	}
+	fmt.Println(_agent.OffchainDownloadBundle("bas-bundle", "test-data", "bundle"))
+}
