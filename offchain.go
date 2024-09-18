@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 
 	"github.com/bnb-attestation-service/bas-go/offchain"
 	bundletypes "github.com/bnb-chain/greenfield-bundle-sdk/types"
@@ -189,6 +190,92 @@ func (a *Agent) OffchainDownloadBundle(bucketName string, objName string, savePa
 		return "", err
 	}
 	return bundleFile.Name(), nil
+}
+
+func (a *Agent) OffchainMultiAttestByBundle(attestations []*offchain.OffchainAttestationParam, schemaUid string, bucket string) (string, error) {
+	var objs []offchain.SingleBundleObject
+	var attestationUids []string
+	for _, attestation := range attestations {
+		attestationUids = append(attestationUids, attestation.Uid)
+		if _b, err := json.Marshal(attestation); err != nil {
+			return "", fmt.Errorf("offchain multi attest error: %v", err)
+		} else {
+			var obj offchain.SingleBundleObject
+			obj.Data = _b
+			obj.Name = attestation.Uid
+			objs = append(objs, obj)
+		}
+	}
+	bundleUid, err := offchain.GetBundleUid(attestationUids)
+	if err != nil {
+		return "", err
+	}
+	objName := fmt.Sprintf("bundle.%s.%s", schemaUid, bundleUid)
+	return a.OffchainUploadBundleToGF(objs, objName, bucket)
+
+}
+func (a *Agent) OffchainParseAttestationsFromBundle(bundleFile string, bundleName string) (map[string]offchain.MessageForUid, error) {
+	// we have to check schema ID
+	re := regexp.MustCompile(`bundle\.(0x[a-fA-F0-9]{64})\.(0x[a-fA-F0-9]{64})`)
+
+	matches := re.FindStringSubmatch(bundleName)
+	var schemaId string
+	var bundleUid string
+	if len(matches) > 2 {
+		schemaId = matches[1]
+		bundleUid = matches[2]
+	} else {
+		return nil, fmt.Errorf("invalid schema Id in bundle")
+	}
+
+	data, err := offchain.RecoverBundle(bundleFile)
+	if err != nil {
+		return nil, err
+	}
+	sources := data.GetBundleObjectsMeta()
+
+	results := map[string]offchain.MessageForUid{}
+
+	var attestationUids []string
+	for _, source := range sources {
+		obj, _, err := data.GetObject(source.Name)
+		if err != nil || obj == nil {
+			return nil, fmt.Errorf("parse object in bundled object failed: %v", err)
+		}
+		buf := new(bytes.Buffer)
+		_, err = buf.ReadFrom(obj)
+		if err != nil {
+			return nil, fmt.Errorf("parse object in bundled object failed: %v", err)
+		}
+		attest := buf.Bytes()
+		var offchainAttestation offchain.OffchainAttestationParam
+		if err := json.Unmarshal(attest, &offchainAttestation); err != nil {
+			return nil, fmt.Errorf("parse object in bundled object failed: %v", err)
+		}
+		var message offchain.MessageForUid
+		if err := message.Decode(offchainAttestation.Message); err != nil {
+			return nil, fmt.Errorf("parse object in bundled object failed: %v", err)
+		}
+		if message.Schema != schemaId {
+			return nil, fmt.Errorf("parse object in bundled object failed: get an invalid schemaId")
+		}
+
+		uid := offchain.GetOffChainAttestationUid(message)
+		if uid != source.Name {
+			return nil, fmt.Errorf("parse object in bundled object failed: {%s} has unmatched uid", source.Name)
+		}
+		attestationUids = append(attestationUids, uid)
+		results[source.Name] = message
+	}
+
+	bundleUidRec, err := offchain.GetBundleUid(attestationUids)
+	if err != nil {
+		return nil, fmt.Errorf("invalid attestation uids")
+	}
+	if bundleUid != bundleUidRec {
+		return nil, fmt.Errorf("invalid bundle uid")
+	}
+	return results, nil
 }
 
 func (a *Agent) CheckWritePermission(bucket string) (bool, error) {

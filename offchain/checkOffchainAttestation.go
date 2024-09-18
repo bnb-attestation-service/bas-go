@@ -21,7 +21,7 @@ func _checkOffchainAttestation(attestation OffchainAttestationParam, signer stri
 	if err := message.Decode(attestation.Message); err != nil {
 		return false, fmt.Errorf("err for attestation uid: " + err.Error())
 	}
-	if recUid := getOffChainAttestationUid(message); recUid != uid {
+	if recUid := GetOffChainAttestationUid(message); recUid != uid {
 		return false, fmt.Errorf("un-matched attestation uid: " + recUid + " for " + uid)
 	}
 
@@ -65,7 +65,7 @@ func _checkOffchainAttestationRecSigner(attestation OffchainAttestationParam, ui
 		return false, "", fmt.Errorf("err for attestation uid: " + err.Error())
 	}
 
-	if recUid := getOffChainAttestationUid(message); recUid != uid {
+	if recUid := GetOffChainAttestationUid(message); recUid != uid {
 		return false, "", fmt.Errorf("un-matched attestation uid: " + recUid + " for " + uid)
 	}
 

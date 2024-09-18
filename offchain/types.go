@@ -131,7 +131,7 @@ var BASTESTDOMAIN = OffchainAttestationDomain{
 
 func EncodeData(schema string, data map[string]interface{}) ([]byte, error) {
 	_schema := fmt.Sprintf("tuple(%s)", schema)
-	fmt.Println(_schema, data)
+
 	typ := abi.MustNewType(_schema)
 	if res, err := typ.Encode(data); err != nil {
 		return nil, err
@@ -207,7 +207,7 @@ func NewBASOffchainAttestation(schemaUid string, schema string, data map[string]
 			attest.Signature = _sig
 		}
 	}
-	uid := getOffChainAttestationUid(m)
+	uid := GetOffChainAttestationUid(m)
 	attest.Uid = uid
 	return &attest, nil
 }
