@@ -17,6 +17,10 @@ const (
 	ZEROADDRESS   = "0x0000000000000000000000000000000000000000"
 )
 
+type OffChainAttestation struct {
+	MessageForUid
+	Attestor string
+}
 type MessageForUid struct {
 	Version        string
 	Schema         string
