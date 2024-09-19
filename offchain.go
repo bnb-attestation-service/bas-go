@@ -3,10 +3,8 @@ package agent
 import (
 	"bytes"
 	"context"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 
@@ -15,7 +13,6 @@ import (
 	"github.com/bnb-chain/greenfield-go-sdk/types"
 	permissionTypes "github.com/bnb-chain/greenfield/x/permission/types"
 	storageTypes "github.com/bnb-chain/greenfield/x/storage/types"
-	"github.com/ethereum/go-ethereum/crypto"
 )
 
 func GetBASBucketName(addr string) string {
@@ -26,17 +23,18 @@ func (a *Agent) ConfigBucket(bucket string) {
 }
 
 // TODO: change to bas bucket name
-func (a *Agent) CreateBucket() error {
+func (a *Agent) CreateBucket(name string) error {
 	ctx := context.Background()
 	// get storage providers list
 	spLists, err := a.gfClient.ListStorageProviders(ctx, true)
 	if err != nil {
-		log.Fatalf("fail to list in service sps")
+		return fmt.Errorf("fail to list in service sps")
 	}
 	// choose the first sp to be the primary SP
 	primarySP := spLists[0].GetOperatorAddress()
-	addr := crypto.FromECDSA(a.privKey)
-	bucketName := GetBASBucketName(hex.EncodeToString(addr))
+	// addr := crypto.FromECDSA(a.privKey)
+	// bucketName := GetBASBucketName(hex.EncodeToString(addr))
+	bucketName := name
 	if hash, err := a.gfClient.CreateBucket(ctx, bucketName, primarySP, types.CreateBucketOptions{}); err != nil {
 		return err
 	} else {

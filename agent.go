@@ -124,3 +124,8 @@ func NewAgentFromKey(privKey string, bas string, evmRPC string, evmChainId uint6
 		address:   address,
 	}, nil
 }
+
+// return agent's address
+func (a *Agent) GetAddress() string {
+	return a.address
+}

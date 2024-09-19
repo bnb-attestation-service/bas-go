@@ -306,7 +306,7 @@ func TestCreateBucket(t *testing.T) {
 	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
-	if err := _agent.CreateBucket(); err != nil {
+	if err := _agent.CreateBucket("bas-bundle-test"); err != nil {
 		panic(err)
 	}
 
@@ -415,6 +415,7 @@ func TestOffchainParseAttestationsFromBundle(t *testing.T) {
 	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
+	fmt.Println(_agent.GetAddress())
 	bundle := "/var/folders/41/chy96h11203cb0b6_d43jnc80000gn/T/bundle-3902080736"
 	bundleName := "bundle.0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f.0x8db66dda4b46008695f4dcab09245a3b2694da353da17ebe58ca29f79887a9dd"
 	attestations, err := _agent.OffchainParseAttestationsFromBundle(bundle, bundleName)
