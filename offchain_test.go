@@ -427,3 +427,47 @@ func TestOffchainParseAttestationsFromBundle(t *testing.T) {
 		fmt.Println(v)
 	}
 }
+
+func TestBundleCapasity(t *testing.T) {
+	var _agent *Agent
+	var err error
+	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+		panic(err)
+	}
+	fmt.Println(_agent.GetAddress())
+
+	for {
+		var attestations []*offchain.OffchainAttestationParam
+		bundleSize := 100
+		for _amount := 0; _amount < bundleSize; _amount++ {
+			data := map[string]interface{}{
+				"p":     "1212",
+				"tick":  "1212",
+				"amt":   _amount,
+				"nonce": _amount,
+				"vote":  0,
+			}
+
+			if res, err := _agent.OffchainNewAttestation(
+				"0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f",
+				"string p,string tick,uint256 amt,uint8 vote,uint256 nonce",
+				data,
+				"0x16abBD7f92CDF1703beb6D314885d2a79B0497fb",
+				false,
+				"0x0000000000000000000000000000000000000000000000000000000000000000",
+				0,
+				1703255628,
+				0,
+				3,
+			); err != nil {
+				panic(err)
+			} else {
+				attestations = append(attestations, res)
+			}
+		}
+		schemaUid := "0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f"
+		bucket := "bas-bundle"
+		fmt.Println(_agent.OffchainMultiAttestByBundle(attestations, schemaUid, bucket))
+	}
+
+}
