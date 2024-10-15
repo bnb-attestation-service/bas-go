@@ -91,16 +91,16 @@ func (a *Agent) OffchainUploadAttestationToGF(attestation *offchain.OffchainAtte
 	}
 }
 
-func (a *Agent) OffchainUploadAttestationToGFFromRaw(attestationBytes []byte, bucket string, visible bool) (string, error) {
+func (a *Agent) OffchainUploadAttestationToGFFromRaw(attestationBytes []byte, bucket string, visible bool) (string, *offchain.OffchainAttestationParam, error) {
 
 	var attestation offchain.OffchainAttestationParam
 	if err := json.Unmarshal(attestationBytes, &attestation); err != nil {
-		return "", fmt.Errorf("error attestation type" + err.Error())
+		return "", nil, fmt.Errorf("error attestation type" + err.Error())
 	}
 
 	objName := fmt.Sprintf("%s.%s", attestation.Message["schema"], attestation.Uid)
 	if _data, err := json.Marshal(attestation); err != nil {
-		return "", fmt.Errorf("marshal offchain attestation error: " + err.Error())
+		return "", nil, fmt.Errorf("marshal offchain attestation error: " + err.Error())
 	} else {
 		var buffer bytes.Buffer
 		ctx := context.Background()
@@ -114,13 +114,13 @@ func (a *Agent) OffchainUploadAttestationToGFFromRaw(attestationBytes []byte, bu
 		}
 		var txHash string
 		if txHash, err = a.gfClient.CreateObject(ctx, bucket, objName, bytes.NewReader(buffer.Bytes()), types.CreateObjectOptions{Visibility: visibility}); err != nil {
-			return "", fmt.Errorf("create obj gf err: " + err.Error())
+			return "", nil, fmt.Errorf("create obj gf err: " + err.Error())
 		}
 
 		if err = a.gfClient.PutObject(ctx, bucket, objName, int64(buffer.Len()), bytes.NewReader(buffer.Bytes()), types.PutObjectOptions{TxnHash: txHash}); err != nil {
-			return "", fmt.Errorf("put obj gf err: " + err.Error())
+			return "", nil, fmt.Errorf("put obj gf err: " + err.Error())
 		}
-		return txHash, nil
+		return txHash, &attestation, nil
 	}
 }
 
