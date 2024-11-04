@@ -17,28 +17,6 @@ import (
 	"github.com/bnb-chain/greenfield-go-sdk/types"
 )
 
-const (
-	BAS               = "0x6c2270298b1e6046898a322acB3Cbad6F99f7CBD"
-	OPBNBTESTBAS      = "0x5e905F77f59491F03eBB78c204986aaDEB0C6bDa"
-	SCHEMA            = "0x08C8b8417313fF130526862f90cd822B55002D72"
-	SCHEMANAME        = "0x44d562ac1d7cd77e232978687fea027ace48f719cf1d58c7888e509663bb87fc"
-	SCHEMADESCRIPTION = "0x21cbc60aac46ba22125ff85dd01882ebe6e87eb4fc46628589931ccbef9b8c94"
-)
-
-const (
-	BNBTESTRPC     = "https://data-seed-prebsc-1-s1.bnbchain.org:8545"
-	BNBTESTCHAINID = 97
-
-	OPBNBRPC     = "https://opbnb-mainnet-rpc.bnbchain.org"
-	OPBNBCHAINID = 204
-
-	OPBNBTESTRPC     = "https://opbnb-testnet-rpc.bnbchain.org"
-	OPBNBTESTCHAINID = 5611
-
-	GFTESTRPC     = "https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org:443"
-	GFTESTCHAINID = "greenfield_5600-1"
-)
-
 type Agent struct {
 	contract       *eas.EAS
 	schemaContract *schemaRegistry.SchemaRegistry
@@ -51,17 +29,20 @@ type Agent struct {
 
 	privKey *ecdsa.PrivateKey
 	address string
+
+	BasContract    string
+	SchemaContract string
 }
 
-func NewAgentFromKey(privKey string, bas string, evmRPC string, evmChainId uint64, gfRPC string, gfChainId string) (*Agent, error) {
+func NewAgentFromKey(privKey string, basAddress string, schemaAddress string, evmRPC string, evmChainId uint64, gfRPC string, gfChainId string) (*Agent, error) {
 	client, err := ethclient.Dial(evmRPC)
 	if err != nil {
 		return nil, err
 	}
 
 	// Contract Address
-	contractAddress := common.HexToAddress(bas)
-	schemaContractAddress := common.HexToAddress(SCHEMA)
+	contractAddress := common.HexToAddress(basAddress)
+	schemaContractAddress := common.HexToAddress(schemaAddress)
 
 	// Create a new privKey
 	privateKey, err := crypto.HexToECDSA(privKey)

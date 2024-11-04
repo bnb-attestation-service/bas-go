@@ -155,7 +155,6 @@ func GetSigner(asign Signature, adomain OffchainAttestationDomain, atype Offchai
 }
 
 func combineSignature(r, s string, v uint8) ([]byte, error) {
-	// 将 r、s 转换为字节数组
 	rBytes, err := hex.DecodeString(r[2:])
 	if err != nil {
 		return nil, err
@@ -166,10 +165,8 @@ func combineSignature(r, s string, v uint8) ([]byte, error) {
 		return nil, err
 	}
 
-	// 将 v 转换为字节数组
 	vBytes := []byte{v - 27}
 
-	// 拼接 r、s、v
 	signature := append(rBytes, sBytes...)
 	signature = append(signature, vBytes...)
 
@@ -177,44 +174,40 @@ func combineSignature(r, s string, v uint8) ([]byte, error) {
 }
 
 func extractSignature(signature []byte) (sig Signature, err error) {
-	// signature 的长度必须至少为 65 字节
+
 	if len(signature) < 65 {
 		err = errors.New("invalid signature length")
 		return
 	}
 
-	// 从 signature 中提取 r、s 和 v
 	rBytes := signature[:32]
 	sBytes := signature[32:64]
 	vByte := signature[64]
 
-	// 将 r、s 转换为十六进制字符串
 	sig.R = "0x" + hex.EncodeToString(rBytes)
 	sig.S = "0x" + hex.EncodeToString(sBytes)
 
-	// 计算 v
 	sig.V = vByte + 27
 
 	return
 }
 
 func publicKeyBytesToAddress(pubkeyBytes []byte) ([]byte, error) {
-	// 将字节数组转换为 ecdsa.PublicKey
+
 	pubkey, err := crypto.UnmarshalPubkey(pubkeyBytes)
 	if err != nil {
 		return nil, err
 	}
 
-	// 计算以太坊地址
 	address := publicKeyToAddress(*pubkey)
 	return address, nil
 }
 
 func publicKeyToAddress(pubkey ecdsa.PublicKey) []byte {
-	// 以太坊地址是公钥的最后 20 个字节的 Keccak256 哈希值
+
 	pubBytes := crypto.FromECDSAPub(&pubkey)
 	hash := sha3.NewLegacyKeccak256()
-	hash.Write(pubBytes[1:])      // 去掉公钥前缀字节 0x04
-	address := hash.Sum(nil)[12:] // 取后 20 个字节
+	hash.Write(pubBytes[1:])
+	address := hash.Sum(nil)[12:]
 	return address
 }

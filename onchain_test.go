@@ -19,12 +19,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-const (
-	privateKey     = ""
-	EASContract    = "0x6c2270298b1e6046898a322acB3Cbad6F99f7CBD"
-	EIP712Contract = "0x6af3D92eF78f981b8f74469433a27e1222E28843"
-)
-
 func TestAttest(t *testing.T) {
 
 	client, err := ethclient.Dial("https://data-seed-prebsc-1-s1.bnbchain.org:8545")
@@ -87,7 +81,7 @@ func TestAttest(t *testing.T) {
 func TestOnchainAttest(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	_agent.OnchainAttest(
@@ -101,7 +95,7 @@ func TestGetAttestation(t *testing.T) {
 	uid := "0x02a902caa703b0af896614c443265844d50b82ba2c321bb01232e7b34d8a1d19"
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	if attest, err := _agent.OnchainGetAttestation(uid); err != nil {
@@ -117,7 +111,7 @@ func TestOnchainRevokeAttestation(t *testing.T) {
 	uid := "0x10e25590023c3fcdb0aaa1429712a67399328c53e2cfb8658348658e9f07d694"
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	if attest, err := _agent.OnchainRevoke(schema, uid); err != nil {
@@ -138,7 +132,7 @@ func TestOnchainDelegate(t *testing.T) {
 
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, OPBNBTESTBAS, OPBNBTESTRPC, OPBNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, OPBNBTESTBAS, OPBNBTESTSCHEMA, OPBNBTESTRPC, OPBNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	fmt.Println(_agent.contract.Eip712Domain(_agent.callOp))
@@ -162,7 +156,7 @@ func TestOnchainDelegate(t *testing.T) {
 
 	if res, err := _agent.OnchainSignDelegateAttestation(
 		param,
-		onchain.OPBNBTESTDOMAIN,
+		OPBNBTESTDOMAIN,
 	); err != nil {
 		panic(err)
 	} else {
@@ -241,7 +235,7 @@ func TestEIP712HashData(t *testing.T) {
 	fmt.Println("domain", hex.EncodeToString(d[:]))
 
 	var _agent *Agent
-	if _agent, err = NewAgentFromKey(privateKey, OPBNBTESTBAS, OPBNBTESTRPC, OPBNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, OPBNBTESTBAS, OPBNBTESTSCHEMA, OPBNBTESTRPC, OPBNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 
@@ -263,7 +257,7 @@ func TestEIP712HashData(t *testing.T) {
 	//param.Nonce = "1"
 	if res, err := _agent.OnchainSignDelegateAttestation(
 		param,
-		onchain.OPBNBTESTDOMAIN,
+		OPBNBTESTDOMAIN,
 	); err != nil {
 		panic(err)
 	} else {

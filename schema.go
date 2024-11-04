@@ -36,7 +36,7 @@ func (a *Agent) GetSchema(uid string) (*schemaRegistry.SchemaRecord, error) {
 	}
 }
 
-func (a *Agent) SetSchemaName(uid string, name string) (string, error) {
+func (a *Agent) SetSchemaName(uid string, name string, schemaNameUid string) (string, error) {
 	if uid[:2] == "0x" {
 		uid = uid[2:]
 	}
@@ -48,7 +48,7 @@ func (a *Agent) SetSchemaName(uid string, name string) (string, error) {
 	if nData, err := encodeSchemaName([32]byte(_uid), name); err != nil {
 		return "", err
 	} else {
-		return a.OnchainAttest(SCHEMANAME, nData, true, 0)
+		return a.OnchainAttest(schemaNameUid, nData, true, 0)
 	}
 }
 
@@ -68,7 +68,7 @@ func encodeSchemaName(uid [32]byte, name string) ([]byte, error) {
 	return res, nil
 }
 
-func (a *Agent) SetSchemaDescription(uid string, description string) (string, error) {
+func (a *Agent) SetSchemaDescription(uid string, description string, schemaDescriptionUid string) (string, error) {
 	if uid[:2] == "0x" {
 		uid = uid[2:]
 	}
@@ -80,7 +80,7 @@ func (a *Agent) SetSchemaDescription(uid string, description string) (string, er
 	if nData, err := encodeSchemDescription([32]byte(_uid), description); err != nil {
 		return "", err
 	} else {
-		return a.OnchainAttest(SCHEMADESCRIPTION, nData, true, 0)
+		return a.OnchainAttest(schemaDescriptionUid, nData, true, 0)
 	}
 }
 

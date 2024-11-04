@@ -126,13 +126,6 @@ type OffchainAttestationParam struct {
 	Uid         string                     `json:"uid"`
 }
 
-var BASTESTDOMAIN = OffchainAttestationDomain{
-	Name:              "BAS Attestation",
-	Version:           "1.3.0",
-	ChainId:           "97",
-	VerifyingContract: "0x6c2270298b1e6046898a322acB3Cbad6F99f7CBD",
-}
-
 func EncodeData(schema string, data map[string]interface{}) ([]byte, error) {
 	_schema := fmt.Sprintf("tuple(%s)", schema)
 
@@ -145,10 +138,10 @@ func EncodeData(schema string, data map[string]interface{}) ([]byte, error) {
 
 }
 
-func NewBASOffchainAttestation(schemaUid string, schema string, data map[string]interface{}, recipient string, revocable bool, refUid string, nonce uint64, time uint64, expirationTime uint64, version uint16, signer *ecdsa.PrivateKey) (*OffchainAttestationParam, error) {
+func NewBASOffchainAttestation(schemaUid string, schema string, domain OffchainAttestationDomain, data map[string]interface{}, recipient string, revocable bool, refUid string, nonce uint64, time uint64, expirationTime uint64, version uint16, signer *ecdsa.PrivateKey) (*OffchainAttestationParam, error) {
 
 	attest := OffchainAttestationParam{}
-	attest.Domain = BASTESTDOMAIN
+	attest.Domain = domain
 	message := OffchainAttestationMessage{}
 
 	var m MessageForUid

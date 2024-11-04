@@ -1,122 +1,3 @@
-// package main
-
-// import (
-// 	"fmt"
-// 	"testing"
-// )
-
-// // NOTE!!!!!!!!!
-// // POINT ONE: MODIFY go/src/github.com/go-ethereum/signer/core/apitypes/types.go to remove line 347/348 like:
-// // *************************
-// // Verify extra data
-// //
-// //	if exp, got := len(typedData.Types[primaryType]), len(data); exp < got {
-// //		return nil, fmt.Errorf("there is extra data provided in the message (%d < %d)", exp, got)
-// //	}
-// //
-// // *************************
-
-// // POINT TWO: MODIFY go/pkg/mod/github.com/miguelmota/go-solidity-sha3@v0.1.1/utils.go to add at line 43 like:
-// // *************************
-// // switch typ {
-// // case "address":
-// // 	if _isArray {
-// // 		return padZeros(Address(value), 32)
-// // 	}
-
-// // 	return Address(value)
-// // case "bytes":
-// // 	bytes, err := hex.DecodeString(value.(string)[2:])
-// // 	if err != nil {
-// // 		panic(err)
-// // 	}
-// // 	return bytes
-
-// // case "string":
-// // 	return String(value)
-// // case "bool":
-// // 	if _isArray {
-// // 		return padZeros(Bool(value), 32)
-// // 	}
-
-// //		return Bool(value)
-// //	}
-// //
-// // *************************
-// // Example 1: PADO
-// func Test_checkOffchainAttestation(t *testing.T) {
-// 	attestationStr := `{
-// 		"version": 2,
-// 		"uid": "0xc5ae92a79c7ca46bde999f628d27aea1a910e4af825541318115b84c8c6e2a55",
-// 		"domain": {
-// 		  "name": "BAS Attestation",
-// 		  "version": "1.3.0",
-// 		  "chainId": "97",
-// 		  "verifyingContract": "0x6c2270298b1e6046898a322acB3Cbad6F99f7CBD"
-// 		},
-// 		"primaryType": "Attest",
-// 		"message": {
-// 		  "version": 1,
-// 		  "recipient": "0xf5eaB61f3A738A4B37d5d9B95f638a0A7db5Cb5f",
-// 		  "expirationTime": 0,
-// 		  "time": 1707419147,
-// 		  "revocable": true,
-// 		  "nonce": 0,
-// 		  "schema": "0x3969bb076acfb992af54d51274c5c868641ca5344e1aacd0b1f5e4f80ac0822f",
-// 		  "refUID": "0x0000000000000000000000000000000000000000000000000000000000000000",
-// 		  "data": "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b48656c6c6f2c2045415321000000000000000000000000000000000000000000",
-// 		  "salt": "0x50bd672cccbf7e1450067cd4af7a441ace046692a22f2453559bbd261125cf29"
-// 		},
-// 		"types": {
-// 		  "Attest": [
-// 			{ "name": "version", "type": "uint16" },
-// 			{ "name": "schema", "type": "bytes32" },
-// 			{ "name": "recipient", "type": "address" },
-// 			{ "name": "time", "type": "uint64" },
-// 			{ "name": "expirationTime", "type": "uint64" },
-// 			{ "name": "revocable", "type": "bool" },
-// 			{ "name": "refUID", "type": "bytes32" },
-// 			{ "name": "data", "type": "bytes" },
-// 			{ "name": "salt", "type": "bytes32" },
-// 			{ "name": "nonce", "type": "uint64" }
-// 		  ]
-// 		},
-// 		"signature": {
-// 		  "v": 27,
-// 		  "r": "0x9c2bb4d7883a6df9466faada5b054692af44cb91e5a0862c13e1ebe380412d86",
-// 		  "s": "0x30773bd71491aadbf0b2ba04796116fbc998ee4264848ef85997abc26dad1b12"
-// 		}
-// 	  }`
-// 	if pass, signer, err := CheckOffchainAttestationRecSigner(
-// 		attestationStr,
-// 		"0xc5ae92a79c7ca46bde999f628d27aea1a910e4af825541318115b84c8c6e2a55",
-// 		"",
-// 		"string ProofType,string Source,string Content,string Condition,bytes32 SourceUserIdHash,bool Result,uint64 Timestamp,bytes32 UserIdHash"); err != nil {
-// 		panic(err)
-// 	} else if pass {
-// 		fmt.Println("pass !")
-// 		fmt.Println(signer)
-// 	}
-// }
-
-// // Example 2: BAS
-// func Test_checkOffchainAttestation2(t *testing.T) {
-// 	attestationStr := `{"domain":{"name":"EAS Attestation","version":"1.3.0","chainId":"97","verifyingContract":"0x6c2270298b1e6046898a322acB3Cbad6F99f7CBD"},"primaryType":"Attest","message":{"recipient":"0x0000000000000000000000000000000000000000","expirationTime":"0","time":"1704301232","revocable":true,"version":1,"nonce":"0","schema":"0xcb86ea930c2fde4952fe64237575b62903a353e4724174fd272d2fc4053165dc","refUID":"0x0000000000000000000000000000000000000000000000000000000000000000","data":"0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000037472790000000000000000000000000000000000000000000000000000000000"},"types":{"Attest":[{"name":"version","type":"uint16"},{"name":"schema","type":"bytes32"},{"name":"recipient","type":"address"},{"name":"time","type":"uint64"},{"name":"expirationTime","type":"uint64"},{"name":"revocable","type":"bool"},{"name":"refUID","type":"bytes32"},{"name":"data","type":"bytes"}]},"signature":{"v":28,"r":"0xc4c47d41380c3deadd91f4eb9db899fa517174e816a1bd1d9d2a547c76f33547","s":"0x41219a7d0776fe5b793117e91b7673281fda48fd36defa111b7a2b4578fc1f57"},"uid":"0x0c73ec7475661e62f85aa8958c0f59507b7559595930d658f79dd3d7957a1561"}`
-// 	if pass, err := CheckOffchainAttestation(
-// 		attestationStr,
-// 		"0x471543A3bd04486008c8a38c5C00543B73F1769e",
-// 		"0x0c73ec7475661e62f85aa8958c0f59507b7559595930d658f79dd3d7957a1561",
-// 		"",
-// 		"string ProofType,string Source,string Content,string Condition,bytes32 SourceUserIdHash,bool Result,uint64 Timestamp,bytes32 UserIdHash"); err != nil {
-// 		panic(err)
-// 	} else if pass {
-// 		fmt.Println("pass !")
-// 	}
-// }
-
-// func Test_abi(t *testing.T) {
-
-// }
 package agent
 
 import (
@@ -131,7 +12,7 @@ import (
 func TestCreateOffchainAttestation(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	data := map[string]interface{}{
@@ -145,6 +26,7 @@ func TestCreateOffchainAttestation(t *testing.T) {
 	if res, err := _agent.OffchainNewAttestation(
 		"0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f",
 		"string p,string tick,uint256 amt,uint8 vote,uint256 nonce",
+		OFFCHAINBASTESTDOMAIN,
 		data,
 		"0x16abBD7f92CDF1703beb6D314885d2a79B0497fb",
 		false,
@@ -265,7 +147,7 @@ func Test_checkOffchainAttestation(t *testing.T) {
 func TestUploadToGF(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	_agent.ConfigBucket("bas-90498da77d3ab65e3f2589f0e7ea515266a80a40")
@@ -280,6 +162,7 @@ func TestUploadToGF(t *testing.T) {
 	if res, err := _agent.OffchainNewAttestation(
 		"0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f",
 		"string p,string tick,uint256 amt,uint8 vote,uint256 nonce",
+		OFFCHAINBASTESTDOMAIN,
 		data,
 		"0x16abBD7f92CDF1703beb6D314885d2a79B0497fb",
 		false,
@@ -303,7 +186,7 @@ func TestUploadToGF(t *testing.T) {
 func TestCreateBucket(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	if err := _agent.CreateBucket("bas-bundle-test"); err != nil {
@@ -315,7 +198,7 @@ func TestCreateBucket(t *testing.T) {
 func TestPublicAttestation(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	_agent.ConfigBucket("bas-90498da77d3ab65e3f2589f0e7ea515266a80a40")
@@ -331,7 +214,7 @@ func TestBundleToGF(t *testing.T) {
 
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 
@@ -354,7 +237,7 @@ func TestBundleToGF(t *testing.T) {
 func TestCheckWritePermission(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	fmt.Println(_agent.CheckWritePermission("bas"))
@@ -363,7 +246,7 @@ func TestCheckWritePermission(t *testing.T) {
 func TestDownloadBundle(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	fmt.Println(_agent.OffchainDownloadBundle("bas-bundle", "bundle.0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f.0x8db66dda4b46008695f4dcab09245a3b2694da353da17ebe58ca29f79887a9dd", ""))
@@ -372,7 +255,7 @@ func TestDownloadBundle(t *testing.T) {
 func TestOffchainMultiAttest(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 
@@ -389,6 +272,7 @@ func TestOffchainMultiAttest(t *testing.T) {
 		if res, err := _agent.OffchainNewAttestation(
 			"0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f",
 			"string p,string tick,uint256 amt,uint8 vote,uint256 nonce",
+			OFFCHAINBASTESTDOMAIN,
 			data,
 			"0x16abBD7f92CDF1703beb6D314885d2a79B0497fb",
 			false,
@@ -412,7 +296,7 @@ func TestOffchainMultiAttest(t *testing.T) {
 func TestOffchainParseAttestationsFromBundle(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	fmt.Println(_agent.GetAddress())
@@ -431,7 +315,7 @@ func TestOffchainParseAttestationsFromBundle(t *testing.T) {
 func TestBundleCapasity(t *testing.T) {
 	var _agent *Agent
 	var err error
-	if _agent, err = NewAgentFromKey(privateKey, BAS, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
+	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
 	fmt.Println(_agent.GetAddress())
@@ -451,6 +335,7 @@ func TestBundleCapasity(t *testing.T) {
 			if res, err := _agent.OffchainNewAttestation(
 				"0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f",
 				"string p,string tick,uint256 amt,uint8 vote,uint256 nonce",
+				OFFCHAINBASTESTDOMAIN,
 				data,
 				"0x16abBD7f92CDF1703beb6D314885d2a79B0497fb",
 				false,

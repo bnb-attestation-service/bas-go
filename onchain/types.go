@@ -44,27 +44,6 @@ type OnchainAttestationParam struct {
 	Uid         string                    `json:"uid"`
 }
 
-var BASTESTDOMAIN = OnchainAttestationDomain{
-	Name:              "BAS Attestation",
-	Version:           "1.3.0",
-	ChainId:           "97",
-	VerifyingContract: "0x6c2270298b1e6046898a322acB3Cbad6F99f7CBD",
-}
-
-var OPBNBTESTDOMAIN = OnchainAttestationDomain{
-	Name:              "OPBNB ATTESTATION",
-	Version:           "1.3.0",
-	ChainId:           "5611",
-	VerifyingContract: "0x50D7b7DB694715Ec62F999736FCBF872438A01f1",
-}
-
-var OPBNBDOAIN = OnchainAttestationDomain{
-	Name:              "OPBNB ATTESTATION",
-	Version:           "1.3.0",
-	ChainId:           "204",
-	VerifyingContract: "0x6f9397703f9911Ec39C52D344431e81FE5a6710b",
-}
-
 func EncodeData(schema string, data map[string]interface{}) ([]byte, error) {
 	_schema := fmt.Sprintf("tuple(%s)", schema)
 
