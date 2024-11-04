@@ -31,12 +31,9 @@ const (
 )
 
 const (
-	privateKey     = ""
-	EASContract    = "0x6c2270298b1e6046898a322acB3Cbad6F99f7CBD"
-	EIP712Contract = "0x6af3D92eF78f981b8f74469433a27e1222E28843"
+	privateKey = ""
 )
 
-// used for
 var BASTESTDOMAIN = onchain.OnchainAttestationDomain{
 	Name:              "BAS Attestation",
 	Version:           "1.3.0",

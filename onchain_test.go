@@ -25,9 +25,8 @@ func TestAttest(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("ok")
 
-	contractAddress := common.HexToAddress(EASContract)
+	contractAddress := common.HexToAddress(TESTBAS)
 
 	privateKey, err := crypto.HexToECDSA(privateKey)
 	if err != nil {
