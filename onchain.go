@@ -34,6 +34,36 @@ func (a *Agent) OnchainAttest(schemaUid string, data []byte, revocable bool, exp
 	}
 }
 
+func (a *Agent) OnchainAttest2(schemaUid string, schema string, data map[string]interface{}, revocable bool, expirationTime uint64) (string, error) {
+	if schemaUid[:2] == "0x" {
+		schemaUid = schemaUid[2:]
+	}
+	_schema, err := hex.DecodeString(schemaUid)
+	if err != nil || len(_schema) != 32 {
+		return "", fmt.Errorf("can not parse schema uid: " + schemaUid)
+	}
+
+	if _data, err := onchain.EncodeData(schema, data); err != nil {
+		return "", fmt.Errorf("encode data error: " + err.Error())
+	} else {
+		req := eas.AttestationRequest{
+			Schema: [32]byte(_schema),
+			Data: eas.AttestationRequestData{
+				ExpirationTime: expirationTime,
+				Revocable:      revocable,
+				Data:           _data,
+				Value:          big.NewInt(0),
+			},
+		}
+		if tx, err := a.contract.Attest(a.txOp, req); err != nil {
+			return "", fmt.Errorf("create attestation onchain error: " + err.Error())
+		} else {
+			return tx.Hash().Hex(), nil
+		}
+	}
+
+}
+
 func (a *Agent) OnchainGetAttestation(uid string) (*eas.Attestation, error) {
 	if uid[:2] == "0x" {
 		uid = uid[2:]
