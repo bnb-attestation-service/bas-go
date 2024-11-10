@@ -7,9 +7,10 @@ import (
 
 	"github.com/bnb-attestation-service/bas-go/eas"
 	"github.com/bnb-attestation-service/bas-go/onchain"
+	"github.com/ethereum/go-ethereum/common"
 )
 
-func (a *Agent) OnchainAttest(schemaUid string, data []byte, revocable bool, expirationTime uint64) (string, error) {
+func (a *Agent) OnchainAttest(schemaUid string, recipient string, data []byte, revocable bool, expirationTime uint64) (string, error) {
 	if schemaUid[:2] == "0x" {
 		schemaUid = schemaUid[2:]
 	}
@@ -18,12 +19,14 @@ func (a *Agent) OnchainAttest(schemaUid string, data []byte, revocable bool, exp
 		return "", fmt.Errorf("can not parse schema uid: " + schemaUid)
 	}
 
+	recipientAddr := common.HexToAddress(recipient)
 	req := eas.AttestationRequest{
 		Schema: [32]byte(_schema),
 		Data: eas.AttestationRequestData{
 			ExpirationTime: expirationTime,
 			Revocable:      revocable,
 			Data:           data,
+			Recipient:      recipientAddr,
 			Value:          big.NewInt(0),
 		},
 	}
@@ -34,7 +37,7 @@ func (a *Agent) OnchainAttest(schemaUid string, data []byte, revocable bool, exp
 	}
 }
 
-func (a *Agent) OnchainAttest2(schemaUid string, schema string, data map[string]interface{}, revocable bool, expirationTime uint64) (string, error) {
+func (a *Agent) OnchainAttest2(schemaUid string, recipient string, schema string, data map[string]interface{}, revocable bool, expirationTime uint64) (string, error) {
 	if schemaUid[:2] == "0x" {
 		schemaUid = schemaUid[2:]
 	}
@@ -43,6 +46,7 @@ func (a *Agent) OnchainAttest2(schemaUid string, schema string, data map[string]
 		return "", fmt.Errorf("can not parse schema uid: " + schemaUid)
 	}
 
+	recipientAddr := common.HexToAddress(recipient)
 	if _data, err := onchain.EncodeData(schema, data); err != nil {
 		return "", fmt.Errorf("encode data error: " + err.Error())
 	} else {
@@ -52,6 +56,7 @@ func (a *Agent) OnchainAttest2(schemaUid string, schema string, data map[string]
 				ExpirationTime: expirationTime,
 				Revocable:      revocable,
 				Data:           _data,
+				Recipient:      recipientAddr,
 				Value:          big.NewInt(0),
 			},
 		}

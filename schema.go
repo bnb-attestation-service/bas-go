@@ -48,7 +48,7 @@ func (a *Agent) SetSchemaName(uid string, name string, schemaNameUid string) (st
 	if nData, err := encodeSchemaName([32]byte(_uid), name); err != nil {
 		return "", err
 	} else {
-		return a.OnchainAttest(schemaNameUid, nData, true, 0)
+		return a.OnchainAttest(schemaNameUid, ZEROADDRESS, nData, true, 0)
 	}
 }
 
@@ -80,7 +80,7 @@ func (a *Agent) SetSchemaDescription(uid string, description string, schemaDescr
 	if nData, err := encodeSchemDescription([32]byte(_uid), description); err != nil {
 		return "", err
 	} else {
-		return a.OnchainAttest(schemaDescriptionUid, nData, true, 0)
+		return a.OnchainAttest(schemaDescriptionUid, ZEROADDRESS, nData, true, 0)
 	}
 }
 

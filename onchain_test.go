@@ -85,6 +85,7 @@ func TestOnchainAttest(t *testing.T) {
 	}
 	_agent.OnchainAttest(
 		"0x85500e806cf1e74844d51a20a6d893fe1ed6f6b0738b50e43d774827d08eca61",
+		"0x471543A3bd04486008c8a38c5C00543B73F1769e",
 		nil,
 		false,
 		0,
