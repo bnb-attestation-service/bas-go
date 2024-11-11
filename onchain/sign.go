@@ -41,7 +41,7 @@ func Sign(adomain OnchainAttestationDomain, atype OnchainAttestationType, amessa
 
 	extraType := map[string][]types.Type{}
 	if err := json.Unmarshal([]byte(domainTypeStr), &extraType); err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	myType["EIP712Domain"] = extraType["EIP712Domain"]
