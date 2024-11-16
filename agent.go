@@ -21,6 +21,7 @@ type Agent struct {
 	contract       *eas.EAS
 	schemaContract *schemaRegistry.SchemaRegistry
 	txOp           *bind.TransactOpts
+	gasLimit       uint64
 	callOp         *bind.CallOpts
 
 	evmClient *ethclient.Client
@@ -97,6 +98,7 @@ func NewAgentFromKey(privKey string, basAddress string, schemaAddress string, ev
 		contract:       contract,
 		schemaContract: schemaContract,
 		txOp:           auth,
+		gasLimit:       0,
 		callOp:         &caller,
 
 		evmClient: client,
@@ -118,7 +120,7 @@ func (a *Agent) SetGas() error {
 		return err
 	}
 	a.txOp.GasPrice = gasPrice
-	a.txOp.GasLimit = uint64(300000)
+	a.txOp.GasLimit = a.gasLimit
 
 	nonce, err := a.evmClient.PendingNonceAt(context.Background(), a.txOp.From)
 	if err != nil {
@@ -126,4 +128,8 @@ func (a *Agent) SetGas() error {
 	}
 	a.txOp.Nonce = big.NewInt(int64(nonce))
 	return nil
+}
+
+func (a *Agent) SetGasLimit(limit uint64) {
+	a.gasLimit = limit
 }
