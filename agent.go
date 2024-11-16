@@ -22,6 +22,7 @@ type Agent struct {
 	schemaContract *schemaRegistry.SchemaRegistry
 	txOp           *bind.TransactOpts
 	gasLimit       uint64
+	gasPrice       uint64
 	callOp         *bind.CallOpts
 
 	evmClient *ethclient.Client
@@ -99,6 +100,7 @@ func NewAgentFromKey(privKey string, basAddress string, schemaAddress string, ev
 		schemaContract: schemaContract,
 		txOp:           auth,
 		gasLimit:       0,
+		gasPrice:       0,
 		callOp:         &caller,
 
 		evmClient: client,
@@ -115,11 +117,16 @@ func (a *Agent) GetAddress() string {
 
 func (a *Agent) SetGas() error {
 	// Gas Limit
-	gasPrice, err := a.evmClient.SuggestGasPrice(context.Background())
-	if err != nil {
-		return err
+	if a.gasPrice == 0 {
+		gasPrice, err := a.evmClient.SuggestGasPrice(context.Background())
+		if err != nil {
+			return err
+		}
+		a.txOp.GasPrice = gasPrice
+	} else {
+		a.txOp.GasPrice = big.NewInt(int64(a.gasPrice))
 	}
-	a.txOp.GasPrice = gasPrice
+
 	a.txOp.GasLimit = a.gasLimit
 
 	nonce, err := a.evmClient.PendingNonceAt(context.Background(), a.txOp.From)
@@ -132,4 +139,8 @@ func (a *Agent) SetGas() error {
 
 func (a *Agent) SetGasLimit(limit uint64) {
 	a.gasLimit = limit
+}
+
+func (a *Agent) SetGasPrice(price uint64) {
+	a.gasPrice = price
 }
