@@ -11,6 +11,7 @@ import (
 )
 
 func (a *Agent) OnchainAttest(schemaUid string, recipient string, data []byte, revocable bool, expirationTime uint64) (string, error) {
+	a.SetGas()
 	if schemaUid[:2] == "0x" {
 		schemaUid = schemaUid[2:]
 	}
@@ -38,6 +39,7 @@ func (a *Agent) OnchainAttest(schemaUid string, recipient string, data []byte, r
 }
 
 func (a *Agent) OnchainAttest2(schemaUid string, recipient string, schema string, data map[string]interface{}, revocable bool, expirationTime uint64) (string, error) {
+	a.SetGas()
 	if schemaUid[:2] == "0x" {
 		schemaUid = schemaUid[2:]
 	}
@@ -117,7 +119,7 @@ func (a *Agent) OnchainRevoke(schema string, uid string) (string, error) {
 }
 
 func (a *Agent) OnchainRevokeOffchain(uid string) (string, error) {
-
+	a.SetGas()
 	if uid[:2] == "0x" {
 		uid = uid[2:]
 	}

@@ -55,19 +55,19 @@ func NewAgentFromKey(privKey string, basAddress string, schemaAddress string, ev
 		return nil, err
 	}
 
-	// Gas Limit
-	gasPrice, err := client.SuggestGasPrice(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	auth.GasPrice = gasPrice
-	auth.GasLimit = uint64(300000)
+	// // Gas Limit
+	// gasPrice, err := client.SuggestGasPrice(context.Background())
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// auth.GasPrice = gasPrice
+	// auth.GasLimit = uint64(300000)
 
-	nonce, err := client.PendingNonceAt(context.Background(), auth.From)
-	if err != nil {
-		return nil, err
-	}
-	auth.Nonce = big.NewInt(int64(nonce))
+	// nonce, err := client.PendingNonceAt(context.Background(), auth.From)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// auth.Nonce = big.NewInt(int64(nonce))
 
 	contract, err := eas.NewEAS(contractAddress, client)
 	if err != nil {
@@ -109,4 +109,21 @@ func NewAgentFromKey(privKey string, basAddress string, schemaAddress string, ev
 // return agent's address
 func (a *Agent) GetAddress() string {
 	return a.address
+}
+
+func (a *Agent) SetGas() error {
+	// Gas Limit
+	gasPrice, err := a.evmClient.SuggestGasPrice(context.Background())
+	if err != nil {
+		return err
+	}
+	a.txOp.GasPrice = gasPrice
+	a.txOp.GasLimit = uint64(300000)
+
+	nonce, err := a.evmClient.PendingNonceAt(context.Background(), a.txOp.From)
+	if err != nil {
+		return err
+	}
+	a.txOp.Nonce = big.NewInt(int64(nonce))
+	return nil
 }
