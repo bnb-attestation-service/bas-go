@@ -11,23 +11,19 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func (a *Agent) OnchainAttest(schemaUid, recipient, referenceAttestation string, data map[string]interface{}, revocable bool, expirationTime uint64, gasPrice, gasLimit uint64) (string, error) {
+func (a *Agent) OnchainAttest(schemaUid, recipient, referenceAttestation string, data map[string]interface{}, revocable bool, expirationTime uint64, gasPrice int64, gasLimit uint64) (string, error) {
 	bSchemaUid := common.HexToHash(schemaUid)
 	schemaRecord, err := a.schemaContract.GetSchema(new(bind.CallOpts), bSchemaUid)
 	if err != nil {
 		return "", err
 	}
 
-	if gasPrice == 0 {
-		_gasPrice, err := a.evmClient.SuggestGasPrice(ctx)
-		if err != nil {
-			return "", err
-		}
-		a.txOp.GasPrice = _gasPrice
+	if gasPrice != 0 {
+		a.txOp.GasPrice = big.NewInt(gasPrice)
 	}
 
-	if gasLimit == 0 {
-		a.txOp.GasLimit = uint64(300000)
+	if gasLimit != 0 {
+		a.txOp.GasLimit = gasLimit
 	}
 
 	schema := schemaRecord.Schema
