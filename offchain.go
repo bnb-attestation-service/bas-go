@@ -10,6 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"os"
 	"regexp"
+	"strings"
 
 	"github.com/bnb-attestation-service/bas-go/offchain"
 	bundletypes "github.com/bnb-chain/greenfield-bundle-sdk/types"
@@ -31,7 +32,7 @@ func (a *Agent) CreateBucket(address string) (string, error) {
 		return "", errors.New("invalid address")
 	}
 
-	name := fmt.Sprintf("bas-%s", address)
+	name := strings.ToLower(fmt.Sprintf("bas-%s", address))
 	ctx := context.Background()
 	// get storage providers list
 	spLists, err := a.gfClient.ListStorageProviders(ctx, true)
