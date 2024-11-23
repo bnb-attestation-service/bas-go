@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -25,7 +26,12 @@ func (a *Agent) ConfigBucket(bucket string) {
 }
 
 // TODO: change to bas bucket name
-func (a *Agent) CreateBucket(name string) error {
+func (a *Agent) CreateBucket(address string) error {
+	if !common.IsHexAddress(address) {
+		return errors.New("invalid address")
+	}
+
+	name := fmt.Sprintf("bas-%s", address)
 	ctx := context.Background()
 	// get storage providers list
 	spLists, err := a.gfClient.ListStorageProviders(ctx, true)

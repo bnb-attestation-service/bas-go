@@ -25,7 +25,6 @@ func TestCreateOffchainAttestation(t *testing.T) {
 
 	if res, err := _agent.OffchainNewAttestation(
 		"0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f",
-		"string p,string tick,uint256 amt,uint8 vote,uint256 nonce",
 		OFFCHAINBASTESTDOMAIN,
 		data,
 		"0x16abBD7f92CDF1703beb6D314885d2a79B0497fb",
@@ -161,7 +160,6 @@ func TestUploadToGF(t *testing.T) {
 
 	if res, err := _agent.OffchainNewAttestation(
 		"0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f",
-		"string p,string tick,uint256 amt,uint8 vote,uint256 nonce",
 		OFFCHAINBASTESTDOMAIN,
 		data,
 		"0x16abBD7f92CDF1703beb6D314885d2a79B0497fb",
@@ -271,7 +269,6 @@ func TestOffchainMultiAttest(t *testing.T) {
 
 		if res, err := _agent.OffchainNewAttestation(
 			"0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f",
-			"string p,string tick,uint256 amt,uint8 vote,uint256 nonce",
 			OFFCHAINBASTESTDOMAIN,
 			data,
 			"0x16abBD7f92CDF1703beb6D314885d2a79B0497fb",
@@ -334,7 +331,6 @@ func TestBundleCapasity(t *testing.T) {
 
 			if res, err := _agent.OffchainNewAttestation(
 				"0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f",
-				"string p,string tick,uint256 amt,uint8 vote,uint256 nonce",
 				OFFCHAINBASTESTDOMAIN,
 				data,
 				"0x16abBD7f92CDF1703beb6D314885d2a79B0497fb",
