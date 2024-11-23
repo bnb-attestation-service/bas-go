@@ -11,7 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func (a *Agent) OnchainAttest(schemaUid string, recipient string, data map[string]interface{}, revocable bool, expirationTime uint64, gasPrice, gasLimit uint64) (string, error) {
+func (a *Agent) OnchainAttest(schemaUid, recipient, referenceAttestation string, data map[string]interface{}, revocable bool, expirationTime uint64, gasPrice, gasLimit uint64) (string, error) {
 	bSchemaUid := common.HexToHash(schemaUid)
 	schemaRecord, err := a.schemaContract.GetSchema(new(bind.CallOpts), bSchemaUid)
 	if err != nil {
@@ -38,6 +38,7 @@ func (a *Agent) OnchainAttest(schemaUid string, recipient string, data map[strin
 		req := eas.AttestationRequest{
 			Schema: bSchemaUid,
 			Data: eas.AttestationRequestData{
+				RefUID:         common.HexToHash(referenceAttestation),
 				ExpirationTime: expirationTime,
 				Revocable:      revocable,
 				Data:           _data,
