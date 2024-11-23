@@ -34,6 +34,8 @@ type Agent struct {
 	SchemaContract string
 }
 
+var ctx = context.Background()
+
 func NewAgentFromKey(privKey string, basAddress string, schemaAddress string, evmRPC string, evmChainId uint64, gfRPC string, gfChainId string) (*Agent, error) {
 	client, err := ethclient.Dial(evmRPC)
 	if err != nil {
@@ -54,14 +56,6 @@ func NewAgentFromKey(privKey string, basAddress string, schemaAddress string, ev
 	if err != nil {
 		return nil, err
 	}
-
-	// Gas Limit
-	gasPrice, err := client.SuggestGasPrice(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	auth.GasPrice = gasPrice
-	auth.GasLimit = uint64(300000)
 
 	nonce, err := client.PendingNonceAt(context.Background(), auth.From)
 	if err != nil {

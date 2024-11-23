@@ -10,12 +10,9 @@ const (
 	TESTBAS      = "0x6c2270298b1e6046898a322acB3Cbad6F99f7CBD"
 	OPBNBTESTBAS = "0x5e905F77f59491F03eBB78c204986aaDEB0C6bDa"
 
-	TESTSCHEMA            = "0x08C8b8417313fF130526862f90cd822B55002D72"
-	OPBNBTESTSCHEMA       = "" // could be set to nil if not used in agent
-	TESTSCHEMANAME        = "0x44d562ac1d7cd77e232978687fea027ace48f719cf1d58c7888e509663bb87fc"
-	TESTSCHEMADESCRIPTION = "0x21cbc60aac46ba22125ff85dd01882ebe6e87eb4fc46628589931ccbef9b8c94"
+	TESTSCHEMA      = "0x08C8b8417313fF130526862f90cd822B55002D72"
+	OPBNBTESTSCHEMA = "" // could be set to nil if not used in agent
 
-	ZEROADDRESS = "0x0000000000000000000000000000000000000000"
 )
 
 const (
@@ -33,7 +30,7 @@ const (
 )
 
 const (
-	privateKey = ""
+	privateKey = "19dfa30d6165181386c6a706f065bd841bf41fb9457a7f4a7a9b8c5df5d4de89"
 )
 
 var BASDOMAIN = onchain.OnchainAttestationDomain{

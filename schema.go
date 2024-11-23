@@ -6,7 +6,6 @@ import (
 
 	"github.com/bnb-attestation-service/bas-go/schemaRegistry"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/umbracle/ethgo/abi"
 )
 
 // TODO: return uid
@@ -36,66 +35,19 @@ func (a *Agent) GetSchema(uid string) (*schemaRegistry.SchemaRecord, error) {
 	}
 }
 
-func (a *Agent) SetSchemaName(uid string, name string, schemaNameUid string) (string, error) {
-	if uid[:2] == "0x" {
-		uid = uid[2:]
-	}
-	_uid, err := hex.DecodeString(uid)
-	if err != nil || len(_uid) != 32 {
-		return "", fmt.Errorf("can not parse uid: " + uid)
-	}
-
-	if nData, err := encodeSchemaName([32]byte(_uid), name); err != nil {
-		return "", err
-	} else {
-		return a.OnchainAttest(schemaNameUid, ZEROADDRESS, nData, true, 0)
-	}
+func (a *Agent) SetSchemaName(uid string, name string) (string, error) {
+	bUId := common.HexToHash(uid)
+	nData := make(map[string]interface{})
+	nData["schemaId"] = bUId
+	nData["name"] = name
+	return a.OnchainAttest(NameSchemaUid, ZEROADDRESS, nData, true, 0, 0, 0)
 }
 
-func encodeSchemaName(uid [32]byte, name string) ([]byte, error) {
+func (a *Agent) SetSchemaDescription(uid string, description string) (string, error) {
+	bUId := common.HexToHash(uid)
+	nData := make(map[string]interface{})
+	nData["schemaId"] = bUId
+	nData["description"] = description
+	return a.OnchainAttest(DescriptionSchemaUId, ZEROADDRESS, nData, true, 0, 0, 0)
 
-	n := map[string]interface{}{}
-	n["name"] = name
-	n["schemaId"] = uid
-
-	typ := abi.MustNewType("tuple(bytes32 schemaId,string name)")
-
-	res, err := typ.Encode(&n)
-	if err != nil {
-		return nil, fmt.Errorf("fail to encode schema attestors data with error %v", err)
-	}
-
-	return res, nil
-}
-
-func (a *Agent) SetSchemaDescription(uid string, description string, schemaDescriptionUid string) (string, error) {
-	if uid[:2] == "0x" {
-		uid = uid[2:]
-	}
-	_uid, err := hex.DecodeString(uid)
-	if err != nil || len(_uid) != 32 {
-		return "", fmt.Errorf("can not parse uid: " + uid)
-	}
-
-	if nData, err := encodeSchemDescription([32]byte(_uid), description); err != nil {
-		return "", err
-	} else {
-		return a.OnchainAttest(schemaDescriptionUid, ZEROADDRESS, nData, true, 0)
-	}
-}
-
-func encodeSchemDescription(uid [32]byte, description string) ([]byte, error) {
-
-	n := map[string]interface{}{}
-	n["description"] = description
-	n["schemaId"] = uid
-
-	typ := abi.MustNewType("tuple(bytes32 schemaId,string description)")
-
-	res, err := typ.Encode(&n)
-	if err != nil {
-		return nil, fmt.Errorf("fail to encode schema attestors data with error %v", err)
-	}
-
-	return res, nil
 }

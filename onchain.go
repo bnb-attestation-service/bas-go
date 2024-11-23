@@ -3,6 +3,7 @@ package agent
 import (
 	"encoding/hex"
 	"fmt"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"math/big"
 
 	"github.com/bnb-attestation-service/bas-go/eas"
@@ -10,48 +11,32 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func (a *Agent) OnchainAttest(schemaUid string, recipient string, data []byte, revocable bool, expirationTime uint64) (string, error) {
-	if schemaUid[:2] == "0x" {
-		schemaUid = schemaUid[2:]
-	}
-	_schema, err := hex.DecodeString(schemaUid)
-	if err != nil || len(_schema) != 32 {
-		return "", fmt.Errorf("can not parse schema uid: " + schemaUid)
+func (a *Agent) OnchainAttest(schemaUid string, recipient string, data map[string]interface{}, revocable bool, expirationTime uint64, gasPrice, gasLimit uint64) (string, error) {
+	bSchemaUid := common.HexToHash(schemaUid)
+	schemaRecord, err := a.schemaContract.GetSchema(new(bind.CallOpts), bSchemaUid)
+	if err != nil {
+		return "", err
 	}
 
-	recipientAddr := common.HexToAddress(recipient)
-	req := eas.AttestationRequest{
-		Schema: [32]byte(_schema),
-		Data: eas.AttestationRequestData{
-			ExpirationTime: expirationTime,
-			Revocable:      revocable,
-			Data:           data,
-			Recipient:      recipientAddr,
-			Value:          big.NewInt(0),
-		},
-	}
-	if tx, err := a.contract.Attest(a.txOp, req); err != nil {
-		return "", fmt.Errorf("create attestation onchain error: " + err.Error())
-	} else {
-		return tx.Hash().Hex(), nil
-	}
-}
-
-func (a *Agent) OnchainAttest2(schemaUid string, recipient string, schema string, data map[string]interface{}, revocable bool, expirationTime uint64) (string, error) {
-	if schemaUid[:2] == "0x" {
-		schemaUid = schemaUid[2:]
-	}
-	_schema, err := hex.DecodeString(schemaUid)
-	if err != nil || len(_schema) != 32 {
-		return "", fmt.Errorf("can not parse schema uid: " + schemaUid)
+	if gasPrice == 0 {
+		_gasPrice, err := a.evmClient.SuggestGasPrice(ctx)
+		if err != nil {
+			return "", err
+		}
+		a.txOp.GasPrice = _gasPrice
 	}
 
+	if gasLimit == 0 {
+		a.txOp.GasLimit = uint64(300000)
+	}
+
+	schema := schemaRecord.Schema
 	recipientAddr := common.HexToAddress(recipient)
 	if _data, err := onchain.EncodeData(schema, data); err != nil {
 		return "", fmt.Errorf("encode data error: " + err.Error())
 	} else {
 		req := eas.AttestationRequest{
-			Schema: [32]byte(_schema),
+			Schema: bSchemaUid,
 			Data: eas.AttestationRequestData{
 				ExpirationTime: expirationTime,
 				Revocable:      revocable,

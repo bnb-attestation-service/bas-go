@@ -89,6 +89,8 @@ func TestOnchainAttest(t *testing.T) {
 		nil,
 		false,
 		0,
+		0,
+		0,
 	)
 }
 func TestGetAttestation(t *testing.T) {
@@ -103,7 +105,6 @@ func TestGetAttestation(t *testing.T) {
 	} else {
 		fmt.Println(attest)
 	}
-
 }
 
 func TestOnchainRevokeAttestation(t *testing.T) {
@@ -119,8 +120,8 @@ func TestOnchainRevokeAttestation(t *testing.T) {
 	} else {
 		fmt.Println(attest)
 	}
-
 }
+
 func waitTx(conn *ethclient.Client, tx *types.Transaction) (string, error) {
 	receipt, err := bind.WaitMined(context.Background(), conn, tx)
 	if err != nil {

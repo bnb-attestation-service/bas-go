@@ -6,7 +6,7 @@ import (
 )
 
 func TestCreateSchema(t *testing.T) {
-	schema := "string invite_code_test, uint8 nonce"
+	schema := "string invite_code_test, uint8 nonce, boot invited"
 	revocable := true
 	resolver := ""
 	var _agent *Agent
@@ -19,7 +19,6 @@ func TestCreateSchema(t *testing.T) {
 	} else {
 		fmt.Println(attest)
 	}
-
 }
 
 func TestGetSchema(t *testing.T) {
@@ -46,7 +45,7 @@ func TestSetSchemaName(t *testing.T) {
 	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
-	if schema, err := _agent.SetSchemaName(schemaUid, name, TESTSCHEMANAME); err != nil {
+	if schema, err := _agent.SetSchemaName(schemaUid, name); err != nil {
 		panic(err)
 	} else {
 		fmt.Println(schema)
@@ -62,7 +61,7 @@ func TestSetSchemaDescription(t *testing.T) {
 	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
-	if schema, err := _agent.SetSchemaDescription(schemaUid, descrip, TESTSCHEMADESCRIPTION); err != nil {
+	if schema, err := _agent.SetSchemaDescription(schemaUid, descrip); err != nil {
 		panic(err)
 	} else {
 		fmt.Println(schema)
