@@ -40,7 +40,7 @@ func (a *Agent) SetSchemaName(uid string, name string) (string, error) {
 	nData := make(map[string]interface{})
 	nData["schemaId"] = bUId
 	nData["name"] = name
-	return a.OnchainAttest(NameSchemaUid, ZEROADDRESS, nData, true, 0, 0, 0)
+	return a.OnchainAttest(NameSchemaUid, ZEROADDRESS, ZeroRef, nData, true, 0, 0, 0)
 }
 
 func (a *Agent) SetSchemaDescription(uid string, description string) (string, error) {
@@ -48,6 +48,6 @@ func (a *Agent) SetSchemaDescription(uid string, description string) (string, er
 	nData := make(map[string]interface{})
 	nData["schemaId"] = bUId
 	nData["description"] = description
-	return a.OnchainAttest(DescriptionSchemaUId, ZEROADDRESS, nData, true, 0, 0, 0)
+	return a.OnchainAttest(DescriptionSchemaUId, ZEROADDRESS, ZeroRef, nData, true, 0, 0, 0)
 
 }
