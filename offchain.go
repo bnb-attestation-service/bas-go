@@ -100,7 +100,6 @@ func (a *Agent) OffchainUploadAttestationToGF(attestation *offchain.OffchainAtte
 }
 
 func (a *Agent) OffchainUploadAttestationToGFFromRaw(attestationBytes []byte, bucket string, visible bool) (string, *offchain.OffchainAttestationParam, error) {
-
 	var attestation offchain.OffchainAttestationParam
 	if err := json.Unmarshal(attestationBytes, &attestation); err != nil {
 		return "", nil, fmt.Errorf("error attestation type" + err.Error())
