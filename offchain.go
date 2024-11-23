@@ -26,9 +26,9 @@ func (a *Agent) ConfigBucket(bucket string) {
 }
 
 // TODO: change to bas bucket name
-func (a *Agent) CreateBucket(address string) error {
+func (a *Agent) CreateBucket(address string) (string, error) {
 	if !common.IsHexAddress(address) {
-		return errors.New("invalid address")
+		return "", errors.New("invalid address")
 	}
 
 	name := fmt.Sprintf("bas-%s", address)
@@ -36,7 +36,7 @@ func (a *Agent) CreateBucket(address string) error {
 	// get storage providers list
 	spLists, err := a.gfClient.ListStorageProviders(ctx, true)
 	if err != nil {
-		return fmt.Errorf("fail to list in service sps")
+		return "", fmt.Errorf("fail to list in service sps")
 	}
 	// choose the first sp to be the primary SP
 	primarySP := spLists[0].GetOperatorAddress()
@@ -44,7 +44,7 @@ func (a *Agent) CreateBucket(address string) error {
 	// bucketName := GetBASBucketName(hex.EncodeToString(addr))
 	bucketName := name
 	if hash, err := a.gfClient.CreateBucket(ctx, bucketName, primarySP, types.CreateBucketOptions{}); err != nil {
-		return err
+		return "", err
 	} else {
 		fmt.Println("================================================")
 		fmt.Println("Create bucket: " + bucketName)
@@ -53,7 +53,7 @@ func (a *Agent) CreateBucket(address string) error {
 		fmt.Println("================================================")
 	}
 	a.gfBucket = bucketName
-	return nil
+	return bucketName, nil
 }
 
 func (a *Agent) OffchainNewAttestation(schemaUid string, domain offchain.OffchainAttestationDomain, data map[string]interface{}, recipient string, revocable bool, refUid string, nonce uint64, time uint64, expirationTime uint64, version uint16) (*offchain.OffchainAttestationParam, error) {
