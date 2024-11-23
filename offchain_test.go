@@ -187,7 +187,7 @@ func TestCreateBucket(t *testing.T) {
 	if _agent, err = NewAgentFromKey(privateKey, TESTBAS, TESTSCHEMA, BNBTESTRPC, BNBTESTCHAINID, GFTESTRPC, GFTESTCHAINID); err != nil {
 		panic(err)
 	}
-	if err := _agent.CreateBucket("bas-bundle-test"); err != nil {
+	if _, err := _agent.CreateBucket("0xccC793c4D92f7c425Ef5C2b418b9186ad180708d"); err != nil {
 		panic(err)
 	}
 
