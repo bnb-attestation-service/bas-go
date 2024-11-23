@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"os"
 	"regexp"
 
@@ -48,7 +50,13 @@ func (a *Agent) CreateBucket(name string) error {
 	return nil
 }
 
-func (a *Agent) OffchainNewAttestation(schemaUid string, schema string, domain offchain.OffchainAttestationDomain, data map[string]interface{}, recipient string, revocable bool, refUid string, nonce uint64, time uint64, expirationTime uint64, version uint16) (*offchain.OffchainAttestationParam, error) {
+func (a *Agent) OffchainNewAttestation(schemaUid string, domain offchain.OffchainAttestationDomain, data map[string]interface{}, recipient string, revocable bool, refUid string, nonce uint64, time uint64, expirationTime uint64, version uint16) (*offchain.OffchainAttestationParam, error) {
+	bSchemaUid := common.HexToHash(schemaUid)
+	schemaRecord, err := a.schemaContract.GetSchema(new(bind.CallOpts), bSchemaUid)
+	if err != nil {
+		return nil, err
+	}
+	schema := schemaRecord.Schema
 	return offchain.NewBASOffchainAttestation(schemaUid, schema, domain, data, recipient, revocable, refUid, nonce, time, expirationTime, version, a.privKey)
 }
 
