@@ -3,7 +3,7 @@
 - Go version above 1.21
 ## Add SDK Dependencies
 ```sh
-$ go get github.com/bnb-attestation-service/bas-go
+$ go get github.com/bnb-attestation-service/bas-go@v0.2.1
 ```
 
 replace dependencies in **go.mod**
