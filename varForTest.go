@@ -30,7 +30,7 @@ const (
 )
 
 const (
-	privateKey = "19dfa30d6165181386c6a706f065bd841bf41fb9457a7f4a7a9b8c5df5d4de89"
+	privateKey = ""
 )
 
 var BASDOMAIN = onchain.OnchainAttestationDomain{
