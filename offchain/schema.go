@@ -19,9 +19,9 @@ func checkSchema(dataStr string, schema string) bool {
 		return false
 	}
 
-	v, err := typ.Decode(data)
+	_, err = typ.Decode(data)
 
-	fmt.Println(v, err)
+	// fmt.Println(v, err)
 	if err != nil {
 		return false
 	}
