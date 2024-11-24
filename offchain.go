@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"time"
 
 	"github.com/bnb-attestation-service/bas-go/offchain"
 	bundletypes "github.com/bnb-chain/greenfield-bundle-sdk/types"
@@ -164,6 +165,33 @@ func (a *Agent) OffchainUploadBundleToGF(datas []offchain.SingleBundleObject, na
 
 }
 
+func (a *Agent) OffchainUploadBundleToGFEndless(datas []offchain.SingleBundleObject, name, bucket string) (string, error) {
+
+	bundleData, size, err := offchain.GetBundle(datas)
+	if err != nil {
+		return "", err
+	}
+
+	ctx := context.Background()
+
+	var txHash string
+	if txHash, err = a.gfClient.CreateObject(ctx, bucket, name, bytes.NewReader(bundleData), types.CreateObjectOptions{Visibility: storageTypes.VISIBILITY_TYPE_PUBLIC_READ}); err != nil {
+		return "", fmt.Errorf("create obj gf err: " + err.Error())
+	}
+
+	for {
+		if err = a.gfClient.PutObject(ctx, bucket, name, size, bytes.NewReader(bundleData), types.PutObjectOptions{TxnHash: txHash}); err == nil {
+			break
+		} else {
+			fmt.Printf("Warning: put object to %s error, will retry soon... \n", bucket)
+			time.Sleep(time.Second * 5)
+		}
+	}
+
+	return txHash, nil
+
+}
+
 func (a *Agent) OffchainDownloadBundle(bucketName string, objName string, savePath string) (string, error) {
 	ctx := context.Background()
 	// Get bundle object from Greenfield
@@ -212,6 +240,30 @@ func (a *Agent) OffchainMultiAttestByBundle(attestations []*offchain.OffchainAtt
 	return a.OffchainUploadBundleToGF(objs, objName, bucket)
 
 }
+
+func (a *Agent) OffchainMultiAttestByBundleEndless(attestations []*offchain.OffchainAttestationParam, schemaUid string, bucket string) (string, error) {
+	var objs []offchain.SingleBundleObject
+	var attestationUids []string
+	for _, attestation := range attestations {
+		attestationUids = append(attestationUids, attestation.Uid)
+		if _b, err := json.Marshal(attestation); err != nil {
+			return "", fmt.Errorf("offchain multi attest error: %v", err)
+		} else {
+			var obj offchain.SingleBundleObject
+			obj.Data = _b
+			obj.Name = attestation.Uid
+			objs = append(objs, obj)
+		}
+	}
+	bundleUid, err := offchain.GetBundleUid(attestationUids)
+	if err != nil {
+		return "", err
+	}
+	objName := fmt.Sprintf("bundle.%s.%s", schemaUid, bundleUid)
+	return a.OffchainUploadBundleToGFEndless(objs, objName, bucket)
+
+}
+
 func (a *Agent) OffchainParseAttestationsFromBundle(bundleFile string, bundleName string) (map[string]offchain.OffChainAttestation, error) {
 	// we have to check schema ID
 	re := regexp.MustCompile(`bundle\.(0x[a-fA-F0-9]{64})\.(0x[a-fA-F0-9]{64})`)
