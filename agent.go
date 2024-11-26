@@ -23,9 +23,10 @@ type Agent struct {
 	txOp           *bind.TransactOpts
 	callOp         *bind.CallOpts
 
-	evmClient *ethclient.Client
-	gfClient  gf.IClient
-	gfBucket  string
+	evmClient  *ethclient.Client
+	evmChainId uint64
+	gfClient   gf.IClient
+	gfBucket   string
 
 	privKey *ecdsa.PrivateKey
 	address string
@@ -92,6 +93,7 @@ func NewAgentFromKey(privKey string, basAddress string, schemaAddress string, ev
 		schemaContract: schemaContract,
 		txOp:           auth,
 		callOp:         &caller,
+		evmChainId:     evmChainId,
 
 		evmClient: client,
 		gfClient:  cli,

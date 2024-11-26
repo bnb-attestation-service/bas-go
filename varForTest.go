@@ -35,7 +35,7 @@ const (
 
 var BASDOMAIN = onchain.OnchainAttestationDomain{
 	Name:              "BAS Attestation",
-	Version:           "1.3.0",
+	Version:           "1.3.0",d
 	ChainId:           "56",
 	VerifyingContract: "0x01dAc45529a070Cb67Fc5B328a7eBE394644355B",
 }

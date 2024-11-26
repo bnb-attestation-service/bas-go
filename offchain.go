@@ -32,7 +32,17 @@ func (a *Agent) CreateBucket(address string) (string, error) {
 		return "", errors.New("invalid address")
 	}
 
-	name := strings.ToLower(fmt.Sprintf("bas-%s", address))
+	var bucketPrefix string
+	switch a.evmChainId {
+	case 56, 97:
+		bucketPrefix = "bas"
+	case 204, 5611:
+		bucketPrefix = "obas"
+	default:
+		return "", errors.New("invalid chain id")
+	}
+
+	name := strings.ToLower(fmt.Sprintf("%s-%s", bucketPrefix, address))
 	ctx := context.Background()
 	// get storage providers list
 	spLists, err := a.gfClient.ListStorageProviders(ctx, true)
@@ -226,6 +236,7 @@ func (a *Agent) OffchainMultiAttestByBundle(attestations []*offchain.OffchainAtt
 	return a.OffchainUploadBundleToGF(objs, objName, bucket)
 
 }
+
 func (a *Agent) OffchainParseAttestationsFromBundle(bundleFile string, bundleName string) (map[string]offchain.OffChainAttestation, error) {
 	// we have to check schema ID
 	re := regexp.MustCompile(`bundle\.(0x[a-fA-F0-9]{64})\.(0x[a-fA-F0-9]{64})`)
