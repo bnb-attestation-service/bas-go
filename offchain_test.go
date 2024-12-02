@@ -3,7 +3,6 @@ package agent
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"strconv"
 	"testing"
 
@@ -308,7 +307,6 @@ func TestOffchainParseAttestationsFromBundle(t *testing.T) {
 		fmt.Println(k)
 		fmt.Println(v)
 	}
-	os.WriteFile("att.json", data[0], 0777)
 }
 
 func TestBundleCapasity(t *testing.T) {

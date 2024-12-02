@@ -237,12 +237,12 @@ func (a *Agent) OffchainMultiAttestByBundle(attestations []*offchain.OffchainAtt
 
 }
 
-func (a *Agent) OffchainParseAttestationsFromBundle(bundleFile string, bundleName string) (map[string]offchain.OffChainAttestation, [][]byte, error) {
+func (a *Agent) OffchainParseAttestationsFromBundle(bundleFile string, bundleName string) (map[string]offchain.OffChainAttestation, map[string][]byte, error) {
 	// we have to check schema ID
 	re := regexp.MustCompile(`bundle\.(0x[a-fA-F0-9]{64})\.(0x[a-fA-F0-9]{64})`)
 
 	matches := re.FindStringSubmatch(bundleName)
-	var attestationsRawData [][]byte
+	var attestationsRawData = make(map[string][]byte)
 	var schemaId string
 	var bundleUid string
 	if len(matches) > 2 {
@@ -272,7 +272,6 @@ func (a *Agent) OffchainParseAttestationsFromBundle(bundleFile string, bundleNam
 			return nil, nil, fmt.Errorf("parse object in bundled object failed: %v", err)
 		}
 		attest := buf.Bytes()
-		attestationsRawData = append(attestationsRawData, attest)
 		var offchainAttestation offchain.OffchainAttestationParam
 		if err := json.Unmarshal(attest, &offchainAttestation); err != nil {
 			return nil, nil, fmt.Errorf("parse object in bundled object failed: %v", err)
@@ -290,7 +289,7 @@ func (a *Agent) OffchainParseAttestationsFromBundle(bundleFile string, bundleNam
 			return nil, nil, fmt.Errorf("parse object in bundled object failed: {%s} has unmatched uid", source.Name)
 		}
 		attestationUids = append(attestationUids, uid)
-
+		attestationsRawData[uid] = attest
 		attestor, err := offchain.GetSigner(offchainAttestation.Signature, offchainAttestation.Domain, offchainAttestation.Type, offchainAttestation.Message)
 		if err != nil {
 			return nil, nil, fmt.Errorf("get signer from attestation Param failed: %v", err)
