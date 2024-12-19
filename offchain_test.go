@@ -1,12 +1,22 @@
 package agent
 
 import (
+	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
+	storageTypes "github.com/bnb-chain/greenfield/x/storage/types"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/umbracle/ethgo/abi"
+	"math/rand"
+
 	"strconv"
 	"testing"
 
 	"github.com/bnb-attestation-service/bas-go/offchain"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	gormLogger "gorm.io/gorm/logger"
 )
 
 func TestCreateOffchainAttestation(t *testing.T) {
@@ -224,7 +234,7 @@ func TestBundleToGF(t *testing.T) {
 		datas = append(datas, data)
 	}
 
-	tx, err := _agent.OffchainUploadBundleToGF(datas, "test-data", "bas-bundle")
+	tx, err := _agent.OffchainUploadBundleToGF(datas, "test-data", "bas-bundle", storageTypes.VISIBILITY_TYPE_PUBLIC_READ)
 	if err != nil {
 		panic(err)
 	}
@@ -286,7 +296,7 @@ func TestOffchainMultiAttest(t *testing.T) {
 	}
 	schemaUid := "0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f"
 	bucket := "bas-bundle"
-	fmt.Println(_agent.OffchainMultiAttestByBundle(attestations, schemaUid, bucket))
+	fmt.Println(_agent.OffchainMultiAttestByBundle(attestations, schemaUid, bucket, storageTypes.VISIBILITY_TYPE_PUBLIC_READ))
 
 }
 
@@ -299,7 +309,7 @@ func TestOffchainParseAttestationsFromBundle(t *testing.T) {
 	fmt.Println(_agent.GetAddress())
 	bundle := "/var/folders/nf/z40nschs2b5dkhzm7d9mrt3m0000gn/T/bundle-741682584"
 	bundleName := "bundle.0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f.0x8db66dda4b46008695f4dcab09245a3b2694da353da17ebe58ca29f79887a9dd"
-	attestations, data, err := _agent.OffchainParseAttestationsFromBundle(bundle, bundleName)
+	attestations, _, err := _agent.OffchainParseAttestationsFromBundle(bundle, bundleName)
 	if err != nil {
 		panic(err)
 	}
@@ -348,7 +358,129 @@ func TestBundleCapasity(t *testing.T) {
 		}
 		schemaUid := "0x5bb3334a97088f7c018fafb6cdd5f06d17c6734ba10fe3944115b815b8b89d2f"
 		bucket := "bas-bundle"
-		fmt.Println(_agent.OffchainMultiAttestByBundle(attestations, schemaUid, bucket))
+		fmt.Println(_agent.OffchainMultiAttestByBundle(attestations, schemaUid, bucket, storageTypes.VISIBILITY_TYPE_PUBLIC_READ))
 	}
 
+}
+
+func TestName(t *testing.T) {
+	rdb, err := gorm.Open(postgres.Open("postgres://postgres:Gbs1767359487@bas-instance-1.ccggmi9astti.us-east-1.rds.amazonaws.com/op_bas_mainnet"), &gorm.Config{
+		Logger: gormLogger.Default.LogMode(gormLogger.Info),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	var _agent *Agent
+	if _agent, err = NewAgentFromKey(privateKey, BAS, SCHEAMA, BSCRPC, BSCCHAINID, GFRPC, GFCHAINID); err != nil {
+		panic(err)
+	}
+	schemaUID := "0x6adca6e46080fcbaae1a1b19592fc88f20845bfbd78f284a360b05b442cc3a82"
+	schema := "bytes32 uHash,string source,bytes32 publicDataHash,bool followBASTwitter"
+	bucket := "bas-0x0a39809058b35a5068541d892194952963516025"
+	datas := getHash(schemaUID, schema)
+	limit := 1181
+	repeat := 9
+
+	for i := 0; i < repeat; i++ {
+		var pks []string
+		sql := `select key from pks offset ? limit ?`
+		if err = rdb.Raw(sql, i*1000, limit).Scan(&pks).Error; err != nil {
+			panic(err)
+		}
+
+		var attestations []*offchain.OffchainAttestationParam
+		for j, pk := range pks {
+
+			randomNumber := rand.Intn(1734278400-1732983880) + 1732983880
+
+			priKey, err := crypto.HexToECDSA(pk[2:])
+			if err != nil {
+				panic(err)
+			}
+			address := crypto.PubkeyToAddress(*(priKey.Public().(*ecdsa.PublicKey)))
+			att, err := _agent.OffchainNewAttestation(schemaUID, offchain.OffchainAttestationDomain{
+				Name:              BASDOMAIN.Name,
+				Version:           BASDOMAIN.Version,
+				ChainId:           BASDOMAIN.ChainId,
+				VerifyingContract: BASDOMAIN.VerifyingContract,
+			}, datas[i%len(datas)], address.String(), false, "", 0, uint64(randomNumber), 0, 0)
+			if err != nil {
+				panic(err)
+			}
+			attestations = append(attestations, att)
+			t.Logf("no: %d", i*len(pks)+j)
+		}
+		hash, err := _agent.OffchainMultiAttestByBundle(attestations, schemaUID, bucket, storageTypes.VISIBILITY_TYPE_PUBLIC_READ)
+		t.Log(hash, err)
+	}
+}
+
+func TestName1(t *testing.T) {
+	schemaUID := "0x6adca6e46080fcbaae1a1b19592fc88f20845bfbd78f284a360b05b442cc3a82"
+	rdb, err := gorm.Open(postgres.Open("postgres://postgres:Gbs1767359487@bas-instance-1.ccggmi9astti.us-east-1.rds.amazonaws.com/bas_mainnet"), &gorm.Config{
+		Logger: gormLogger.Default.LogMode(gormLogger.Info),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	sql := "select uid,timestamps from attestation where schema_uid = ?"
+	var result []struct {
+		Uid        string
+		Timestamps int64
+	}
+
+	err = rdb.Raw(sql, schemaUID).Scan(&result).Error
+	if err != nil {
+		panic(err)
+	}
+
+	times := make(map[int64]int)
+
+	for _, r := range result {
+		times[r.Timestamps]++
+	}
+	for t, i := range times {
+		fmt.Println(t, ":", i)
+	}
+	t.Log(len(result))
+}
+
+func getHash(schemaId, schema string) []map[string]interface{} {
+	_schema := fmt.Sprintf("tuple(%s)", schema)
+
+	typ := abi.MustNewType(_schema)
+
+	rdb, err := gorm.Open(postgres.Open("postgres://postgres:Gbs1767359487@bas-instance-1.ccggmi9astti.us-east-1.rds.amazonaws.com/bas_mainnet"), &gorm.Config{
+		Logger: gormLogger.Default.LogMode(gormLogger.Info),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	var data [][]byte
+
+	sql := `select raw_data from attestation where schema_uid = ?`
+	err = rdb.Raw(sql, schemaId).Scan(&data).Error
+	if err != nil {
+		panic(data)
+	}
+
+	var result []map[string]interface{}
+	for _, _data := range data {
+		var offchainAtt offchain.OffchainAttestationParam
+		if err = json.Unmarshal(_data, &offchainAtt); err != nil {
+			panic(err)
+		}
+
+		dataStr := offchainAtt.Message["data"].(string)
+		dataByte := common.Hex2Bytes(dataStr[2:])
+		v, err := typ.Decode(dataByte)
+		if err != nil {
+			panic(err)
+		}
+		result = append(result, v.(map[string]interface{}))
+	}
+	return result
 }

@@ -168,7 +168,7 @@ func (a *Agent) OffchainChangeAttestationVisible(schemaUid string, attestationUi
 	}
 }
 
-func (a *Agent) OffchainUploadBundleToGF(datas []offchain.SingleBundleObject, name, bucket string) (string, error) {
+func (a *Agent) OffchainUploadBundleToGF(datas []offchain.SingleBundleObject, name, bucket string, visibility storageTypes.VisibilityType) (string, error) {
 
 	bundleData, size, err := offchain.GetBundle(datas)
 	if err != nil {
@@ -178,7 +178,7 @@ func (a *Agent) OffchainUploadBundleToGF(datas []offchain.SingleBundleObject, na
 	ctx := context.Background()
 
 	var txHash string
-	if txHash, err = a.gfClient.CreateObject(ctx, bucket, name, bytes.NewReader(bundleData), types.CreateObjectOptions{Visibility: storageTypes.VISIBILITY_TYPE_PUBLIC_READ}); err != nil {
+	if txHash, err = a.gfClient.CreateObject(ctx, bucket, name, bytes.NewReader(bundleData), types.CreateObjectOptions{Visibility: visibility}); err != nil {
 		return "", fmt.Errorf("create obj gf err: " + err.Error())
 	}
 
@@ -189,7 +189,7 @@ func (a *Agent) OffchainUploadBundleToGF(datas []offchain.SingleBundleObject, na
 
 }
 
-func (a *Agent) OffchainDownloadBundle(bucketName string, objName string, savePath string) (string, error) {
+func (a *Agent) OffchainDownloadBundle(bucketName, objName, savePath string) (string, error) {
 	ctx := context.Background()
 	// Get bundle object from Greenfield
 	bundledObject, _, err := a.gfClient.GetObject(ctx, bucketName, objName, types.GetObjectOptions{})
@@ -215,7 +215,7 @@ func (a *Agent) OffchainDownloadBundle(bucketName string, objName string, savePa
 	return bundleFile.Name(), nil
 }
 
-func (a *Agent) OffchainMultiAttestByBundle(attestations []*offchain.OffchainAttestationParam, schemaUid string, bucket string) (string, error) {
+func (a *Agent) OffchainMultiAttestByBundle(attestations []*offchain.OffchainAttestationParam, schemaUid, bucket string, visibility storageTypes.VisibilityType) (string, error) {
 	var objs []offchain.SingleBundleObject
 	var attestationUids []string
 	for _, attestation := range attestations {
@@ -234,7 +234,7 @@ func (a *Agent) OffchainMultiAttestByBundle(attestations []*offchain.OffchainAtt
 		return "", err
 	}
 	objName := fmt.Sprintf("bundle.%s.%s", schemaUid, bundleUid)
-	return a.OffchainUploadBundleToGF(objs, objName, bucket)
+	return a.OffchainUploadBundleToGF(objs, objName, bucket, visibility)
 
 }
 

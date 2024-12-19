@@ -228,5 +228,4 @@ func (a *Agent) OnchainSignDelegateAttestation(attest onchain.OnchainDelegateAtt
 	} else {
 		return sig, nil
 	}
-
 }
