@@ -78,6 +78,10 @@ func (a *Agent) OffchainNewAttestation(schemaUid string, domain offchain.Offchai
 	return offchain.NewBASOffchainAttestation(schemaUid, schema, domain, data, recipient, revocable, refUid, nonce, time, expirationTime, version, a.privKey)
 }
 
+func (a *Agent) OffchainNewAttestation2(schemaUid string, domain offchain.OffchainAttestationDomain, data []byte, recipient string, revocable bool, refUid string, nonce uint64, time uint64, expirationTime uint64, version uint16) (*offchain.OffchainAttestationParam, error) {
+	return offchain.NewBASOffChainAttestation2(schemaUid, domain, data, recipient, revocable, refUid, nonce, time, expirationTime, version, a.privKey)
+}
+
 func (a *Agent) OffchainGetAttestationJson(attestation *offchain.OffchainAttestationParam) (string, error) {
 
 	if _b, err := json.Marshal(attestation); err != nil {
