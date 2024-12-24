@@ -139,6 +139,19 @@ func EncodeData(schema string, data map[string]interface{}) ([]byte, error) {
 }
 
 func NewBASOffchainAttestation(schemaUid string, schema string, domain OffchainAttestationDomain, data map[string]interface{}, recipient string, revocable bool, refUid string, nonce uint64, time uint64, expirationTime uint64, version uint16, signer *ecdsa.PrivateKey) (*OffchainAttestationParam, error) {
+	_data, err := EncodeData(schema, data)
+	if err != nil {
+		return nil, fmt.Errorf("encode data error: " + err.Error())
+	}
+	return newBASOffChainAttestation(schemaUid, domain, _data, recipient, revocable, refUid, nonce, time, expirationTime, version, signer)
+
+}
+
+func NewBASOffChainAttestation2(schemaUid string, domain OffchainAttestationDomain, data []byte, recipient string, revocable bool, refUid string, nonce uint64, time uint64, expirationTime uint64, version uint16, signer *ecdsa.PrivateKey) (*OffchainAttestationParam, error) {
+	return newBASOffChainAttestation(schemaUid, domain, data, recipient, revocable, refUid, nonce, time, expirationTime, version, signer)
+}
+
+func newBASOffChainAttestation(schemaUid string, domain OffchainAttestationDomain, data []byte, recipient string, revocable bool, refUid string, nonce uint64, time uint64, expirationTime uint64, version uint16, signer *ecdsa.PrivateKey) (*OffchainAttestationParam, error) {
 
 	attest := OffchainAttestationParam{}
 	attest.Domain = domain
@@ -146,12 +159,8 @@ func NewBASOffchainAttestation(schemaUid string, schema string, domain OffchainA
 
 	var m MessageForUid
 
-	if _data, err := EncodeData(schema, data); err != nil {
-		return nil, fmt.Errorf("encode data error: " + err.Error())
-	} else {
-		message["data"] = "0x" + hex.EncodeToString(_data)
-		m.Data = "0x" + hex.EncodeToString(_data)
-	}
+	message["data"] = "0x" + hex.EncodeToString(data)
+	m.Data = "0x" + hex.EncodeToString(data)
 
 	message["version"] = big.NewInt(int64(version))
 	m.Version = strconv.Itoa(int(version))
